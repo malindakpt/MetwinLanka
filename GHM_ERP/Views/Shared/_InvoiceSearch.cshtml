@@ -1,0 +1,100 @@
+﻿@model GHM_ERP.Models.InvoiceSearchModel
+@using BusinessObjects
+
+
+<div>
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class='@(!ViewBag.InitialAdvancedTab ? "active" : "")'><a href="#byid" aria-controls="byid" role="tab" data-toggle="tab">By invoice number</a></li>
+        <li role="presentation" class='@(ViewBag.InitialAdvancedTab ? "active" : "")'><a href="#advancedsearch" aria-controls="advancedsearch" role="tab" data-toggle="tab">Advanced Search</a></li>
+
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <!-- By ID tab -->
+        <div role="tabpanel" class="tab-pane @(!ViewBag.InitialAdvancedTab ? "active" : "")" id="byid">
+            <form method="get" action="" class="form-horizontal">
+                <br /><br />
+
+                <input type="hidden" value="True" name="IsSearchByInvNo" />
+                @Html.Hidden("IsSearchRequested", true)
+
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.InvNo, new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.InvNo, new { @class = "form-control", required = true, placeholder = "Invoice Number" })
+                        @Html.ValidationMessageFor(model => model.InvNo)
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Search" class="btn btn-primary" />
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+
+
+        <!-- Advanced Search -->
+
+        <div role="tabpanel" class="tab-pane @(ViewBag.InitialAdvancedTab ? "active" : "")" id="advancedsearch">
+            <form method="get" action="" class="form form-horizontal">
+                <br /><br />
+
+                <input type="hidden" value="False" name="IsSearchByInvNo" />
+                @Html.Hidden("IsSearchRequested", true)
+
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Description, new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Description)
+                    </div>
+                </div>
+
+                @if(ViewBag.ShowGatePass ?? false)
+                { 
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.GatePass, new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(model => model.GatePass, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.GatePass)
+                        </div>
+                    </div>
+                }
+                
+                @if(ViewData.ContainsKey("SalesReps"))
+                {
+                    var salesReps = (IEnumerable<SalesRep>)ViewData["SalesReps"];
+                    var selectList = new SelectList(salesReps, "Id", "FullName");
+                    
+                    
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SalesRep, new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.DropDownListFor(model => model.SalesRep, selectList, "None", new { @class = "form-control "})
+                            @Html.ValidationMessageFor(model => model.SalesRep)
+                        </div>
+                    </div>
+                }
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Search" class="btn btn-primary" />
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+
+</div>
+

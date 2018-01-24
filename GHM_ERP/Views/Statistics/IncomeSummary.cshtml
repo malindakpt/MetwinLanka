@@ -1,0 +1,35 @@
+﻿
+@{
+    ViewBag.Title = "IncomeSummary";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>IncomeSummary</h2>
+<div>
+    @using (Html.BeginForm("IncomeSummary", "Statistics", FormMethod.Get))
+    {
+        <div class="form-inline">
+            <label>From</label>
+                <input type="datetime" class="form-control " name="fromdate" />
+            <label>To</label>
+                <input type="datetime" class="form-control" name="todate" />
+            <input type="submit" value="Submit" class="btn btn-info" />
+         </div>
+        
+    }
+</div>
+<div class="panel panel-default row" style="margin-top:5%">
+    
+    <div class="panel-body">
+        
+        @(Model)
+    </div>
+</div> 
+
+
+@section  Scripts
+{
+    <!-- Graphics libs-->
+    <script src="~/Scripts/raphael-min.js"></script>
+    <script src="~/Scripts/Highcharts-4.0.1/js/highcharts.js"></script>
+}

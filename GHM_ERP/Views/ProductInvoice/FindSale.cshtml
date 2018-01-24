@@ -1,0 +1,66 @@
+﻿@model IEnumerable<BusinessObjects.Invoice>
+@using GHM_ERP.Util
+@using GHM_ERP.Models
+@{
+    ViewBag.Title = "Find Sale";
+}
+
+<h2>Find Sale</h2>
+
+@Html.Partial("_InvoiceSearch",new InvoiceSearchModel())
+
+@Html.AlertPanel()
+
+@if(Model != null && Model.Any())
+{
+    <table class="table table-striped">
+        <tr>
+            <th>Invoice No.</th>
+            <th>
+                Client
+            </th>
+            <th>
+                Date
+            </th>
+            <th>
+                Description
+            </th>
+            <th>
+                Gate Pass
+            </th>
+            <th>
+                Total
+            </th>
+        </tr>
+
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.ActionLink(item.FormattedInvoiceNo,"SaleDetails",new {id =item.Id})
+            </td>
+            <td>
+                @item.Client.Name
+            </td>
+            <td>
+                @Html.FormatAsDate(item.Time)
+            </td>
+            <td>
+                @item.Description
+            </td>
+            <td>
+                @item.GatePassRef
+            </td>
+            <td>
+                @Html.FormatAsMoney(item.GetTotal())
+            </td>
+        </tr>
+    }
+
+    </table>
+
+}
+
+@section Scripts
+{
+<link href="~/Content/printstyles.css" rel="stylesheet" />
+}

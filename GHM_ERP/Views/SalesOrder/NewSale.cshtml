@@ -1,0 +1,238 @@
+﻿@model GHM_ERP.Models.SaleViewModel
+@using GHM_ERP.Models
+@using BusinessObjects;
+@using BusinessObjects.Categories
+@using BusinessObjects.Invoicing
+@using GHM_ERP.Util
+
+@{
+    ViewBag.Title = "Sale from Order";
+    var SourceOrder = (Invoice)ViewBag.SourceOrder;
+}
+
+<h2>@ViewBag.Title</h2>
+
+
+@using (Html.BeginForm("EditSales","ProductInvoice", FormMethod.Post))
+{
+    <input type="hidden" value="@SourceOrder.Id" name="SalesOrderInvoiceId" />
+    <div class="form-horizontal mainform">
+
+        <hr />
+        @Html.ValidationSummary(false)
+        <div class="form-group">
+            <label class="control-label col-md-2">Order Id</label>
+            <div class="col-md-10">
+                <div class="form-control-static">
+                    @SourceOrder.FormattedInvoiceNo
+                    @Html.ActionLink("(More details..)", "Details", new { id = SourceOrder.Id })
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Time, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBox("Time", Html.FormatAsDateTime(DateTime.Now), new { @class = "form-control time", type = "datetime", required = "required" })
+                @Html.ValidationMessageFor(model => model.Time)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ClientId, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="form-control-static">@SourceOrder.Client.Name - @SourceOrder.Client.Address</div>
+                <input type="hidden" name="@Html.NameFor(m=>m.ClientId)" value="@SourceOrder.ClientId" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SalesRepId, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="form-control-static">
+                    @if(SourceOrder.SalesRep == null)
+                    {
+                        <em>None</em>
+                    }
+                    else
+                    {
+                        @(SourceOrder.SalesRep.FullName)
+                    }
+                 </div>
+                <input type="hidden" name="@Html.NameFor(m=>m.SalesRepId)" value="@SourceOrder.SalesRepId" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input class="form-control" id="@Html.IdFor(model => model.Description)" name="@Html.NameFor(m=>m.Description)" value="@SourceOrder.Description" />
+                @Html.ValidationMessageFor(model => model.Description)
+            </div>
+        </div>
+
+
+
+        <br/> 
+
+        @* ITEMS *@
+
+        <table class="table table-condensed">
+            @*<caption>Items purchased</caption>*@
+            <thead>
+                <tr>
+                    <th class="col-md-2">Product</th>
+                    <th class="col-md-3">Source</th>
+                    <th class="col-md-1">Length</th>
+                    <th class="col-md-1">Quantity</th>
+                    <th class="col-md-1">Unit Price</th>
+                    <th class="col-md-2">Price</th>
+                    <th class="col-md-1"></th>
+                </tr>
+            </thead>
+            <tbody id="itemsbody">
+                
+                @foreach (var item in SourceOrder.Items)
+                {
+                    <tr class="itemrow">
+                        @{
+                            var indexId = "ITEM"+item.Id;
+                            var prodProfile = (ProductProfile)item.Profile;
+                            var concatRm = string.Join(",", prodProfile.RawMaterialProfiles.Select(r => r.Id));
+                        }
+
+                        <td>
+                            <input type="hidden" name="Items.Index" value="@indexId"/>
+                            @prodProfile.Code  - @prodProfile.Description
+
+
+                            <input class="productId" data-width="@prodProfile.Width" name="Items[@indexId].Id" value="@item.ProfileId" type="hidden" />
+
+                        </td>
+
+                        <td>
+                            <select data-productProfile="@item.ProfileId" data-rmTypes="@concatRm" name="Items[@indexId].SourceInvoiceId" class="form-control combosearch comborm" >
+                                <option value="">No source selected</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input name="Items[@indexId].Length"  value="@item.Length"     type="hidden" class="length" />
+                            <div class="form-control-static">@item.Length</div>
+                        </td>
+
+                        <td>
+                            <input name="Items[@indexId].Qty" type='number' placeholder="Qty" min="1" class="form-control input-sm qty" value="@item.Qty"
+                                    onchange="updatePrice($(this));" required />
+                        </td>
+
+                        <td>
+                            <input name="Items[@indexId].UnitPrice" type='number' placeholder="Unit Price" value="@item.UnitPrice"
+                                    class="form-control input-sm unitprice" onchange="updatePrice($(this));" required />
+                        </td>
+
+                        <td>
+                            <input name="Items[@indexId].Price" type='number' placeholder="Price" class="form-control input-sm price" value="@item.Price"
+                                    onchange="updateTotal()" readonly />
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-warning skipButton" type="button" onclick="skipRow(this)">
+                                <span class="glyphicon glyphicon-remove"></span>
+                                Skip
+                            </button>
+                            <button class="btn btn-sm btn-success readdButton hidden" type="button" onclick="readdRow(this)">
+                                <span class="glyphicon glyphicon-plus"></span>
+                                Add
+                            </button>
+                        </td>
+                    </tr>
+                }
+              
+                <tr id='totalrow'>
+                    <th colspan="5"> Total </th>
+                    <td id="itemtotal"> 0.00</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+
+        <div class="col-md-7">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Invoice Confirmation</h3>
+                </div>
+                <div class="panel-body">
+                    <table class="table-condensed ">
+                        <tbody>
+                            <tr>
+                                <th>Item Count</th>
+                                <td id="itemCount">0</td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-8">Sales Total </th>
+                                <td class="col-md-4" id="summarytotal">0.00</td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-8">Tax </th>
+                                <td class="col-md-4">@(((decimal)ViewBag.TaxPercentage).ToString("0.00"))%&nbsp;included</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br />
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-2">
+                            <input type="submit" value="Create Invoice" class="btn btn-primary" onclick="return validateOrderToSaleInvoice();" />
+                        </div>
+                        <div class="col-md-offset-1 col-md-2">
+                            <a href="@Url.Action("Index")" class="btn btn-danger">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    /* Raw material balances */
+    rawMaterialList = [];
+
+    (function (){
+        var item = 0;
+        @foreach (var bal in (IEnumerable<RawMaterialBalance>)ViewBag.Balances)
+        {
+
+            <text>
+        item = { itemid : @bal.ItemId , reference : htmlDecode('@bal.ItemPurchase.Reference'),
+            invoiceDesc : htmlDecode('@bal.ItemPurchase.Invoice.Description'),
+            itemDesc : htmlDecode('@bal.ItemPurchase.Description'), itemDate : '@bal.ItemPurchase.Invoice.Time.ToShortDateString()',
+            rawMaterialDesc : htmlDecode('@bal.Profile.Description'), rawMaterialId: @bal.Profile.Id ,
+            rawMaterialCode : htmlDecode('@bal.Profile.Code'),
+                balance: @bal.RemainingQuantity.ToString("0.00")  , width: @bal.Profile.Width
+                };
+            rawMaterialList.push(item);
+            </text>
+        }
+
+    } )();
+
+    $(function()
+    {
+        $(".itemrow").each(function(i,elem)
+        {
+            readdRow($(elem));
+        });
+        updateTotal();
+    }
+    );
+</script>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/ghm.invoices.js"></script>
+    <script src="~/Scripts/ghm.order-to-sale.js"></script>
+
+}

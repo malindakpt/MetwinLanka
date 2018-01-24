@@ -1,0 +1,66 @@
+﻿@model BusinessObjects.Account
+@using BusinessObjects
+@using GHM_ERP.Util
+
+@{
+    ViewBag.Title = "Add Account";
+}
+
+<h2>Accounts</h2>
+
+@using (Html.BeginForm()) 
+{
+
+    
+    <div class="form-horizontal">
+        <h4>New Account</h4>
+        <hr />
+        @Html.ValidationSummary(true)
+
+        @Html.AlertPanel()
+       
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Name)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @{IDictionary<Account.AccountTypes, string> accTypes = ViewBag.accTypes; }
+            @Html.LabelFor(model => model.AccountType, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select id="sel1" name="AccountType" class="combosearch form-control" >
+                    @foreach (var ac in accTypes)
+                    {
+                        <option value="@ac.Key" @if(ViewBag.LastType == ac.Key){ <text> selected</text>  } >       
+                            @ac.Value
+                        </option>
+                    }
+                </select>
+            </div>
+
+
+           
+        </div>
+
+        @*<div class="form-group">
+            @Html.LabelFor(model => model.ClientID, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ClientID)
+                @Html.ValidationMessageFor(model => model.ClientID)
+            </div>
+        </div>*@
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

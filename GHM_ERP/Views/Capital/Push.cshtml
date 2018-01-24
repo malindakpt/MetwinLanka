@@ -1,0 +1,173 @@
+﻿@model GHM_ERP.Models.PushCapitalModel
+@using GHM_ERP.Models;
+@using GHM_ERP.Util;
+
+@{
+    ViewBag.Title = "Add Capital";
+}
+
+
+<h2>@ViewBag.Title</h2>
+
+<hr />
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+
+        @Html.ValidationSummary(true)
+
+        @if (TempData.ContainsKey("InfoMsg"))
+        {
+            <div class="alert alert-success" role="alert">
+                @TempData["InfoMsg"]
+            </div> <br />
+        }
+
+        <div class="row">
+            <div class="col-md-7">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Time, new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextBox("Time",Html.FormatAsDateTime(DateTime.Now), new { @class = "form-control time", type = "datetime" })
+                            @Html.ValidationMessageFor(model => model.Time)
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Amount, new { @class = "control-label col-md-2", onchange = "updateTotal();" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(model => model.Amount, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Amount)
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Description, new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Description)
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ReferenceNo, new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(model => model.ReferenceNo, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ReferenceNo)
+
+                        </div>
+                    </div>
+
+                   
+
+                </div>
+
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <h4>Select payment method</h4>
+                <!-- Nav tabs -->
+                <div>
+                    <ul class="nav nav-pills" role="tablist">
+                        <li role="presentation" class="active">
+                            <a href="#cash" aria-controls="cash" role="tab" data-toggle="pill" onclick="switchtab('#cash','#cheque')">
+                                <span class="fa fa-money"></span>
+                                Cash Payment
+                            </a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#cheque" aria-controls="cheque" role="tab" data-toggle="pill" onclick="switchtab('#cheque', '#cash')">
+                                <span class="fa fa-newspaper-o"></span>
+                                Cheque payment
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+
+                <br />
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <!-- Cash Inputs -->
+                    <div role="tabpanel" class="tab-pane active" id="cash">
+
+
+                        <input type="hidden" name="@Html.NameFor(m=>m.Method)" value="@ExpenseViewModel.PaymentMethod.Cash" />
+
+                    </div>
+                    <!-- Cheque payment -->
+                    <div role="tabpanel" class="tab-pane" id="cheque">
+                        <input type="hidden" name="@Html.NameFor(m=>m.Method)" value="@ExpenseViewModel.PaymentMethod.Cheque" />
+                        <div class="form-horizontal">
+
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ChequeBank, new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    @*@Html.DropDownListFor(model => model.ChequeBank, new SelectList(ViewBag.BankAccounts, "Id", "Name")
+                     , new { required = "required", @class = "form-control " })
+                                    @Html.ValidationMessageFor(model => model.ChequeBank)*@
+                                    @Html.TextBoxFor(model => model.ChequeBank, new { @class = "form-control input-sm", required = "required" })
+                                    @Html.ValidationMessageFor(model => model.ChequeBank)
+
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ChequeNumber, new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(model => model.ChequeNumber, new { @class = "form-control input-sm", required = "required" })
+                                    @Html.ValidationMessageFor(model => model.ChequeNumber)
+
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ChequeSettleDate, new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(model => model.ChequeSettleDate, new { @class = "form-control date input-sm", type = "date", required = "required" })
+                                    @Html.ValidationMessageFor(model => model.ChequeSettleDate)
+
+                                </div>
+                            </div>
+                        </div> <!-- form end-->
+                    </div><!--tab end-->
+                </div><!-- tabs end -->
+            </div>
+
+        </div> <!-- row end -->
+
+
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+
+<script>
+
+    $(function () {
+        switchtab('#cash', '#cheque');
+        updateTotal();
+    });
+
+    //$("#submitButton").click(validateInvoice);
+</script>
+
+@section Scripts {
+    <script src="~/Scripts/ghm.payments.js"></script>
+}

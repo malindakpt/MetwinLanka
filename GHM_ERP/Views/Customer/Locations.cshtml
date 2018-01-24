@@ -1,0 +1,37 @@
+﻿@model IEnumerable<BusinessObjects.Location>
+@using BusinessObjects;
+@{
+    ViewBag.Title = "Locations";
+}
+
+<h2>Customer Locations</h2>
+<hr />
+<p>
+    @Html.ActionLink("View Customers", "Index")  
+</p>
+
+<h4>Current Locations</h4>
+<div class="row">
+    <div class="col-md-4">
+        <div class="list-group">
+            <a class="list-group-item">
+                <span class="badge">@ViewBag.UnlocatedClientCount </span>
+                <em>No Location</em> 
+            </a>
+            @foreach (var item in Model)
+            {
+                <a href="@Url.Action("Loc",new { id = item.Id })" class="list-group-item">
+                    <span class="badge">@item.Clients.Count(c => c.Type == Client.Types.Customer)</span>
+                    @item.Name
+                </a>
+            }
+
+        </div>
+    </div>
+</div>
+<hr />
+<h4>New Location</h4>
+<form method="post" action='@Url.Action("LocationAdd")' class="form-inline">
+    <input name="locationName" class="form-control" placeholder="Location Name" required='required' maxlength="75">
+    <input type="submit" value="Add" class="btn btn-primary" />
+</form>

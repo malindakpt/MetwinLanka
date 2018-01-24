@@ -1,0 +1,67 @@
+﻿@model IEnumerable<BusinessObjects.Invoice>
+@using GHM_ERP.Util
+@{
+    ViewBag.Title = "Loans";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+    @Html.ActionLink("New Loans", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Time)
+        </th>
+
+        <th>
+            Loan Account
+        </th>
+
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            Reference
+        </th>
+        <th>
+            Amount
+        </th>
+        <th>
+            Transferred to
+        </th>
+
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.FormatAsDateTime(item.Time)
+        </td>
+        <td>
+            @item.PaymentReceipts.First().TransferFrom.Name
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+        <td>
+            @item.PaymentReceipts.First().RefNo
+        </td>
+        <td>
+            @Html.FormatAsMoney(item.PaymentReceipts.First().Amount)
+        </td>
+        <td>
+            @item.PaymentReceipts.First().TransferTo.Name
+        </td>
+        
+        <td>
+            @*@Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.Id })*@
+        </td>
+    </tr>
+}
+
+</table>

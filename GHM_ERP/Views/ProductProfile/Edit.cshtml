@@ -1,0 +1,141 @@
+﻿@model BusinessObjects.Categories.ProductProfile
+@using BusinessObjects.Categories
+
+@{
+    ViewBag.Title = "Edit " + Model.Description;
+}
+
+<h2>Edit Product Profile</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>@Model.Code - @Model.Description </h4>
+        <hr />
+        @Html.ValidationSummary(false)
+        @Html.HiddenFor(model => model.Id)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Code, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Code, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Code)
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Description)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Type, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @*@Html.EnumDropDownListFor(model => model.Type, new { @class = "form-control combosearch" })*@
+                @Html.TextBoxFor(model => model.Type, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Type)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Color, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Color, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Color)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Thickness, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Thickness, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Thickness)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Width, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Width, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Width)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ProductWidth, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.ProductWidth, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ProductWidth)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.UnitPrice, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.UnitPrice, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.UnitPrice)
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.IsEnabled, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.IsEnabled, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.IsEnabled)
+            </div>
+        </div>
+
+        <!-- RM select-->
+        <div class="form-group">
+            @Html.LabelFor(model => model.RawMaterialProfiles, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @{
+                    var currentRms = new HashSet<int>(Model.RawMaterialProfiles.Select(rm => rm.Id));
+                    var rmProfs = ((IEnumerable<RawMaterialProfile>)ViewBag.RawMaterialProfs)
+                        .Select(rm => new 
+                        {
+                            Value= rm.Id,
+                            Text = rm.Code + " - " + rm.Description ,
+                            Selected = currentRms.Contains(rm.Id) ? "selected" : ""
+                        });
+                 }
+
+                <select multiple class="combosearch form-control" id="rmselect" name="RawMaterialIds">
+                    @foreach (var item in rmProfs)
+                    {
+                        <option value="@item.Value" @item.Selected>
+                            @item.Text
+                        </option>
+                    }
+                </select> 
+                @Html.ValidationMessageFor(model => model.RawMaterialProfiles)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                @Html.ActionLink("Back", "Index", new { }, new { @class = "btn btn-danger" })
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(function() {
+        initializeProdProfileSubmit($("form"), "rmselect");
+    }
+    );
+</script>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/ghm.profiles.js"></script>
+}

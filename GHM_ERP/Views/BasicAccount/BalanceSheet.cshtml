@@ -1,0 +1,208 @@
+﻿@model BusinessObjects.BalanceSheet
+
+@{
+    ViewBag.Title = "BalanceSheet";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="text-center" style="width:57%">
+    <h2>Metwin Lanka Roofing (pvt) Ltd.</h2>
+    <h3>Balance Sheet</h3>
+    <h4>As of @Model.date.ToString("yyyy-MMMM-dd")</h4>
+</div>
+<div>
+    
+    <div class="col-md-7">
+        <table class="table table-condensed">
+            <colgroup>
+                <col class="col-md-4">
+                <col class="col-md-3">
+                <col class="col-md-3">
+            </colgroup>
+            <thead>
+                <tr class="success">
+                    <th>Account</th>
+                    <th>Balance</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>&nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; Assets</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th><i>Fixed Assets</i></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                @foreach (var item in @Model.FixedAssets)
+                {
+                    <tr>
+                        <td>@item.Account.Name - @item.Account.Code</td>
+                        <td class="text-right">@if(item.Balance!=0){@item.Balance.ToString("0.00")}else{<p>-</p>}</td>
+                        <td></td>
+                    </tr>
+                }
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <th class="text-right">@if(Model.FixedAssetsTotal!=0){@Model.FixedAssetsTotal.ToString("0.00")}else{<p>-</p>}</th>
+                </tr>
+                <tr>
+                    <th><i>Other Fixed Assets</i></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                @foreach (var item in @Model.OtherFixedAssets)
+                {
+                    <tr>
+                        <td>@item.Account.Name - @item.Account.Code</td>
+                        <td class="text-right">@if(item.Balance!=0){@item.Balance.ToString("0.00")}else{<p>-</p>}</td>
+                        <td></td>
+                    </tr>
+                }
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right">@Model.OtherFixedAssetsTotal.ToString("0.00")</td>
+                </tr>
+                <tr>
+                    <th><i>Current Assets</i></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                @foreach (var item in @Model.InventoryBalance)
+                {
+                    <tr>
+                        <td>@item.Account.Name - @item.Account.Code</td>
+                        <td class="text-right">@if (item.Balance != 0){@item.Balance.ToString("0.00")}else{<p>-</p>}</td>
+                        <td></td>
+                    </tr>
+                }
+
+
+                @foreach (var item in @Model.CurrentAssets_Cash)
+                {
+                    <tr>
+                        <td>@item.Account.Name - @item.Account.Code</td>
+                        <td class="text-right">@if (item.Balance != 0){@item.Balance.ToString("0.00")}else{<p>-</p>}</td>
+                        <td></td>
+                    </tr>
+                }
+
+                <tr>
+                    <td>Debtors</td>
+                    <td class ="text-right">@Model.CurrentAssets_DebtorsTotal.ToString("0.00")</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Bank</td>
+                    <td class="text-right">@if(Model.CurrentAssets_BankTotal!=0){@Model.CurrentAssets_BankTotal.ToString("0.00")}else{<p>-</p>}</td>
+                    <td></td>
+                </tr>
+                @{
+                    decimal current_asset = @Model.CurrentAssets_CashTotal + 
+                        @Model.CurrentAssets_BankTotal + @Model.CurrentAssets_DebtorsTotal
+                        +@Model.InventoryBalanceTotal;
+                }
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <th class="text-right">@current_asset.ToString("0.00")</th>
+                </tr>
+                <tr>
+                    <th>&nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp;Equity and Liabilities</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th><i>Equity</i></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                @foreach (var item in @Model.Equity)
+                {
+                    <tr>
+                        <td>@item.Account.Name - @item.Account.Code</td>
+                        <td class="text-right">@if (item.Balance != 0){@item.Balance.ToString("0.00")}else{<p>-</p>}</td>
+                        <td></td>
+                    </tr>
+                }
+                <tr>
+                    <td>Profit/Loss</td>
+                    <td class="text-right">@if(Model.Profit!=0){@Model.Profit.ToString("0.00")}else{<p>-</p>}</td>
+                    <td></td>
+                </tr>
+                @{
+                    decimal EqTotal = @Model.EquityTotal +
+                        @Model.Profit;
+                }
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right">@EqTotal.ToString("0.00")</td>
+                </tr>
+                <tr>
+                    <th><i>Fixed Liabilities</i></th>
+                </tr>
+                @foreach (var item in @Model.FixedLiabilities)
+                {
+                    <tr>
+                        <td>@item.Account.Name - @item.Account.Code</td>
+                        <td class="text-right">@if (item.Balance != 0){@item.Balance.ToString("0.00")}else{<p>-</p>}</td>
+                        <td></td>
+                    </tr>
+                }
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right">@Model.FixedLiabilitiesTotal.ToString("0.00")</td>
+                </tr>
+                <tr>
+                    <th><i>Current Liabilities</i></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                @foreach (var item in @Model.CurrentLiabilities)
+                {
+                    <tr>
+                        <td>@item.Account.Name - @item.Account.Code</td>
+                        <td class="text-right">@if (item.Balance != 0){@item.Balance.ToString("0.00")}else{<p>-</p>}</td>
+                        <td></td>
+                    </tr>
+                }
+                <tr>
+                    <td>Creditors</td>
+                    <td class="text-right">@Model.CurrentLiability_CreditorsTotal.ToString("0.00")</td>
+                    <td></td>
+                </tr>
+                @{
+                    decimal current_liabilities = @Model.CurrentLiability_CreditorsTotal + @Model.CurrentLiabilitiesTotal;
+                }
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right">@current_liabilities.ToString("0.00")</td>
+                </tr>
+
+                @{
+                    decimal totalRight = @Model.CurrentLiability_CreditorsTotal + @Model.CurrentLiabilitiesTotal + EqTotal + @Model.FixedLiabilitiesTotal;
+                }
+
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <th class="text-right">@totalRight.ToString("0.00")</th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section  Scripts
+{
+    <!-- Graphics libs-->
+    <script src="~/Scripts/raphael-min.js"></script>
+    <script src="~/Scripts/Highcharts-4.0.1/js/highcharts.js"></script>
+}

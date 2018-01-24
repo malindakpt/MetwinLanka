@@ -1,0 +1,157 @@
+﻿@model BusinessObjects.Client
+@using GHM_ERP.Util
+@using BusinessObjects
+@using BusinessObjects.Categories;
+
+
+@{
+    ViewBag.Title =Model.Name;
+}
+
+<h2>@Model.Name</h2>
+
+<div>
+    <h4>Details</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Phone)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Phone)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Address)
+        </dt>
+
+        <dd>
+            @Html.HtmlEscapeNewLine(Model.Address)
+        </dd>
+
+
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsActive)
+        </dt>
+
+        <dd>
+            @Html.ActivenessDisplayFor(model=> model.IsActive)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
+
+
+<hr />
+
+<h3>Purchases In Time Period</h3>
+<br />
+@using (Html.BeginForm("Details", "Supplier", FormMethod.Get))
+{
+    <div class="form-inline form-group">
+        Start Date : @Html.TextBox("from", Html.FormatAsDate((DateTime)ViewBag.From), new { type = "date", @class = "form-control" })
+        End Date : @Html.TextBox("to", Html.FormatAsDate((DateTime)ViewBag.To), new { type = "date", @class = "form-control" })
+        <input type="submit" value="Search" class="btn btn-info" />
+    </div>
+
+}
+
+<table class="table">
+    <tr>
+        <th>
+            Invoice No.
+        </th>
+        <th>
+            Date
+        </th>
+        <th>
+            Description
+        </th>
+        <th>
+            Total
+        </th>
+        <th>
+            Paid
+        </th>
+        <th></th>
+    </tr>
+    @{
+        var invoices = (IEnumerable<Invoice>)ViewBag.Invoices;
+    }
+    @foreach (var item in invoices)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FormattedInvoiceNo)
+            </td>
+            <td>
+                @Html.FormatAsDateTime(item.Time)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.FormatAsMoney(item.GetTotal())
+            </td>
+            <td>
+                @Html.FormatAsMoney(item.GetNonCreditPaymentTotal())
+            </td>
+
+            <td>
+                @Html.ActionLink("Details", "PurchaseDetails", "ProductInvoice", new { id = item.Id }, new { })
+            </td>
+        </tr>
+    }
+    @if (!invoices.Any())
+    {
+        <tr>
+            <td colspan="5" class="text-center">
+                <em >
+                    No Purchases in this period
+                </em>
+            </td>
+        </tr>
+     }
+
+</table>
+
+
+
+<div class="col-md-7">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Period Summary</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table-condensed ">
+                <tbody>
+                    <tr>
+                        <th>Purchase Count</th>
+                        <td>@invoices.Count()</td>
+                    </tr>
+                    <tr>
+                        <th class="col-md-8">Total Purchases</th>
+                        <td class="col-md-4">
+                            @Html.FormatAsMoney(invoices.Sum(i => i.GetTotal()))
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>

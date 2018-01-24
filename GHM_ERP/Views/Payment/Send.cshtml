@@ -1,0 +1,275 @@
+﻿@model GHM_ERP.Models.PaymentModel
+@using GHM_ERP.Models
+@using GHM_ERP.Util
+@using BusinessObjects
+
+@{
+    ViewBag.Title = "Send Payment";
+}
+
+<h2>Send Payment</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Time, new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBox("Time",Html.FormatAsDateTime(DateTime.Now) ,new { @class = "form-control time", type = "datetime" })
+                        @Html.ValidationMessageFor(model => model.Time)
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Amount, new { @class = "control-label col-md-2", onchange="updateTotal();"})
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.Amount, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Amount)
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Description, new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Description)
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ReferenceNo, new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.ReferenceNo, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ReferenceNo)
+
+                    </div>
+                </div>
+
+                @*<h4>Select Supplier</h4>*@
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ClientId, new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        <select name="@Html.NameFor(m => m.ClientId)" id="@Html.IdFor(m => m.ClientId)" class="form-control combosearch" required
+                                onchange="clientChanged($(this));">
+                            <option value="">Please select a supplier</option>
+                            @foreach (var cl in (IEnumerable<Client>)ViewBag.Clients)
+                            {
+                                <option value="@cl.Id" data-name="@cl.Name" >
+                                    @cl.Name  -  @cl.Address
+                                </option>
+                            }
+                        </select>
+
+                        @Html.ValidationMessageFor(model => model.ClientId)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h4>Select payment method</h4>
+            <!-- Nav tabs -->
+            <div>
+                <ul class="nav nav-pills" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#cash" aria-controls="cash" role="tab" data-toggle="pill" onclick="switchtab('#cash')">
+                            <span class="fa fa-money"></span>
+                            Cash Payment
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#cheque" aria-controls="cheque" role="tab" data-toggle="pill" onclick="switchtab('#cheque')">
+                            <span class="fa fa-newspaper-o"></span>
+                            Cheque payment
+                        </a>
+                    </li>
+
+
+                </ul>
+            </div>
+
+            <br />
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <!-- Cash Inputs -->
+                <div role="tabpanel" class="tab-pane active" id="cash">
+                    <input type="hidden" name="@Html.NameFor(m=>m.Method)" value="@PaymentModel.PaymentMethod.Cash" />
+                </div>
+                <!-- Cheque payment -->
+                <div role="tabpanel" class="tab-pane" id="cheque">
+                    <input type="hidden" name="@Html.NameFor(m=>m.Method)" value="@PaymentModel.PaymentMethod.Cheque" />
+                    <div class="form-horizontal">
+
+                   
+                        @*<div class="form-group">
+                            @Html.LabelFor(model => model.ChequeBank, new { @class = "control-label col-md-3" })
+                            <div class="col-md-9">
+                                @Html.TextBoxFor(model => model.ChequeBank, new { @class = "form-control input-sm", required="required" })
+                                @Html.ValidationMessageFor(model => model.ChequeBank)
+
+                            </div>
+                        </div>*@
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ChequeBankAccount, new { @class = "control-label col-md-3" })
+                            <div class="col-md-9">
+                               
+                                @Html.DropDownListFor(model => model.ChequeBankAccount, new SelectList(ViewBag.BankAccounts,"Id","Name")
+                     , new { required = "required", @class = "form-control " })
+                                @Html.ValidationMessageFor(model => model.ChequeBankAccount)
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ChequeNumber, new { @class = "control-label col-md-3" })
+                            <div class="col-md-9">
+                                @Html.TextBoxFor(model => model.ChequeNumber, new { @class = "form-control input-sm", required = "required" })
+                                @Html.ValidationMessageFor(model => model.ChequeNumber)
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ChequeSettleDate, new { @class = "control-label col-md-3" })
+                            <div class="col-md-9">
+                                @Html.TextBoxFor(model => model.ChequeSettleDate, new { @class = "form-control date input-sm", type = "date", required = "required" })
+                                @Html.ValidationMessageFor(model => model.ChequeSettleDate)
+
+                            </div>
+                        </div>
+                    </div> <!-- form end-->
+                </div><!--tab end-->
+
+
+              </div><!-- tabs end -->
+          </div> 
+
+        </div> <!-- row end -->
+ 
+    <hr/>
+    <h4>Select invoices to pay</h4>
+    <table class="table table-condensed" id="invoiceTable">
+        <thead>
+            <tr>
+                <th>Inv. No.</th>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Total</th>
+                <th>Due</th>
+                <th>Payment Amount</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="hidden" id="templaterow">
+                <td class="invnocol"></td>
+                <td class="datecol">Date</td>
+                <td class="desccol">Description</td>
+                <td class="totalcol">Total</td>
+                <td class="duecol">Due</td>
+                <td>
+                    <!-- hidden fields for invoice-->
+                    <input type="hidden" name="PayedInvoices.Index" value="" class="hiddenindexer" disabled />
+                    <input type="hidden" name="PayedInvoices[INDEXER].InvoiceId" value="" class="hiddenid" disabled />
+
+                    <input type='text' class="invPayAmount form-control input-sm" value="0.00"
+                           onchange="updateTotal();" name="PayedInvoices[INDEXER].Payment" disabled />
+
+
+                </td>
+                <td>
+                    <a href="#" class="btn btn-success btn-sm"
+                       onclick="fillInvAmount(findParentTR(this)); return false;">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </a>
+                    <a href="#" class="btn btn-danger btn-sm" 
+                       onclick="clearInvAmount(findParentTR(this)); return false;"   >
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </a>
+                </td>
+            </tr>
+
+            <tr id="emptyMessageRow">
+                <td colspan="7" class="text-center"> No invoices pending payment  </td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="5">Total</th>
+                <td id="totalTD"> 0.00</td>
+            </tr>
+        </tfoot>
+    </table>
+    
+    <div class="col-md-7">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Payment Confirmation</h3>
+                </div>
+                <div class="panel-body">
+                    <table class="table-condensed ">
+                        <tbody>
+                            <tr>
+                                <th>Payment Received</th>
+                                <td id="paymentAmount">
+                                    0.00
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-8">Paid to Invoices</th>
+                                <td class="col-md-4" id="paidToInvoices">0.00</td>
+                            </tr>
+                            <tr>
+                                <th>Balance</th>
+                                <td id="depositAmount">0.00</td>
+                            </tr>
+                            @*<tr>
+                                <th>Outstanding Balance</th>
+                                <td id="outstandingBalance">0.00</td>
+                            </tr>*@
+
+                        </tbody>
+                    </table>
+                    <br/>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-2">
+                            <input type="submit" id="submitButton" onclick="return validateInvoice()" value="Send Payment" class="btn btn-primary" />
+                        </div>
+                        <div class="col-md-offset-1 col-md-2">
+                            <a href="@Url.Action("Index")" class="btn btn-danger">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+}
+
+<script>
+    var dueInvoices = @Html.Raw(Json.Encode(ViewBag.DueInvoices))      ;
+    var deposits = {};
+    var isPurchaseInvoice = true;
+    var isSalesInvoice = false;
+    $(function () {
+        switchtab('#cash', '#cheque');
+        clientChanged($("#ClientId"));
+        updateTotal();
+    });
+
+    //$("#submitButton").click(validateInvoice);
+</script>
+
+@section Scripts {
+
+    <script src="~/Scripts/ghm.payments.js"></script>
+}

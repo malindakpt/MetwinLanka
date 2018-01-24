@@ -1,0 +1,48 @@
+﻿/*--- PRINT  ---*/
+
+
+@media print {
+
+    body
+    {
+        padding-top:0px!important;
+    }
+
+    body * {
+        visibility: hidden;
+    }
+
+    .section-to-print, .section-to-print * {
+        visibility: visible;
+    }
+
+    /*.col-md-offset-2, .col-sm-offset-3 {
+        margin-left: 0%;
+    }*/
+
+    .section-to-print {
+        margin-left: 0%;
+        position:  absolute;
+        top: 0px;
+        padding-top:0;
+        margin-top:0;
+        width: 100%!important;
+    }
+
+    .no-print{
+        display: none;
+    }
+
+    .sidebar{
+        display:none;
+    }
+
+    .main
+    {
+        width:100%;
+        /**/
+    }
+
+
+}
+

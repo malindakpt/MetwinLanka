@@ -1,0 +1,90 @@
+﻿@model BusinessObjects.Invoice
+@using GHM_ERP.Util
+
+@{
+    ViewBag.Title = "Transfer Details";
+}
+
+<h2>@ViewBag.Title </h2>
+
+<div>
+    <h4>Transfer</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.FormattedInvoiceNo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FormattedInvoiceNo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Time)
+        </dt>
+
+        <dd>
+            @Html.FormatAsDateTime(Model.Time)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        @{
+            var receipt = Model.PaymentReceipts.First();
+        }
+
+        <dt>
+            Reference
+        </dt>
+
+        <dd>
+            @receipt.RefNo
+        </dd>
+
+        <dt>
+            Status
+        </dt>
+
+        <dd>
+            @Html.InvoiceStatusDisplay(Model.Status)
+        </dd>
+    </dl>
+</div>
+<hr/>
+<table class="table table-condensed">
+    <thead>
+        <tr>
+            <th>From</th>
+            <th>To</th>
+            <th>Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{var totalAmount = 0m; }
+
+        @foreach (var item in Model.PaymentReceipts)
+        {
+            totalAmount += item.Amount;
+            <tr>
+                <td>@item.TransferFrom.Code  @item.TransferFrom.Name</td>
+                <td>@item.TransferTo.Code @item.TransferTo.Name</td>
+                <td>@Html.FormatAsMoney(item.Amount)</td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="2">Total</th>
+            <th>@Html.FormatAsMoney(totalAmount)</th>
+        </tr>
+    </tfoot>
+</table>
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>

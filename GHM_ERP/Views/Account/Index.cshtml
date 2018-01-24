@@ -1,0 +1,63 @@
+﻿@model IEnumerable<BusinessObjects.User>
+@using GHM_ERP.Util
+
+@{
+    ViewBag.Title = "Users";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@Html.AlertPanel()
+
+<p>
+    @Html.ActionLink("Add User", "Register")
+</p>
+
+
+<table class="table">
+    <tr>
+        <th>
+            Username
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FirstName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LastName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Phone)
+        </th>
+        <th>Role</th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelitem => item.UserName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FirstName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LastName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Phone)
+        </td>
+
+        <td>
+            @string.Join(", ", item.Roles.Select( r=> r.Role.Name))
+        </td>
+
+        <td>
+            @if(ViewBag.CurrentUserName != item.UserName)
+            {
+                @Html.ActionLink("Reset Password", "PasswordReset", new { id=item.UserName })
+            }
+        </td>
+    </tr>
+}
+
+</table>

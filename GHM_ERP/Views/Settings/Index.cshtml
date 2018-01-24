@@ -1,0 +1,54 @@
+﻿@model GHM_ERP.Models.SettingsModel
+@using GHM_ERP.Util
+
+@{
+    ViewBag.Title = "Settings";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div>
+
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.VatCharge)
+        </dt>
+
+        <dd>
+           @Model.VatCharge.ToString("#0.00")%
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Address)
+        </dt>
+
+        <dd>
+            @Html.HtmlEscapeNewLine(Model.Address)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.VatNumber)
+        </dt>
+
+        <dd>
+            @Model.VatNumber
+        </dd>
+
+        <dt >
+            @Html.DisplayNameFor(model => model.HideUnitPriceInVat)
+        </dt>
+
+        <dd>
+            @Model.HideUnitPriceInVat
+        </dd>
+
+    </dl>
+</div>
+<p>
+
+    <a class="btn btn-sm btn-success" href='@Url.Action("Edit")' >
+        <span class="glyphicon glyphicon-pencil"></span>
+        Change
+    </a>
+</p>

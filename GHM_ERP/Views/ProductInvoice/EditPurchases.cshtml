@@ -1,0 +1,273 @@
+﻿@model GHM_ERP.Models.PurchaseViewModel
+@using BusinessObjects
+@using GHM_ERP.Models
+@using GHM_ERP.Util
+@using BusinessObjects.Categories
+
+@{
+    ViewBag.Title = "Purchases";
+}
+@if(Model == null)
+{ 
+<h2>New Purchase</h2>
+}
+else
+{
+    <h2>Edit Purchase</h2>
+}
+
+
+@using (Html.BeginForm())
+{
+    
+    @*@Html.AntiForgeryToken()*@  
+    
+    <div class="form-horizontal">
+
+        @*<h4>Invoice</h4>*@
+        <hr />
+        @Html.ValidationSummary(false)
+
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Time, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBox("Time",Html.FormatAsDateTime(DateTime.Now), new { @class = "form-control time", type = "datetime" })
+                @Html.ValidationMessageFor(model => model.Time)
+ 
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ClientId, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select name="@Html.NameFor(m => m.ClientId)" id="@Html.IdFor(m => m.ClientId)" class="form-control combosearch" required>
+                    @*<option value="">Non Registered Customer</option>*@
+                    @foreach (var cl in (IEnumerable<ClientViewModel>)ViewBag.Clients)
+                    {
+                        <option value="@cl.ClientID" data-name="@cl.Name" data-credits="@cl.Credits"
+                                data-address="@cl.Location">
+                            @cl.Name  -  @cl.Location
+                        </option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(model => model.ClientId)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Description)
+            </div>
+        </div>
+
+
+        @* ITEMS *@
+        <div class="form-group">
+            <div class="col-md-10">
+                <button class="btn btn-sm btn-success" onclick="addRMRow()" type="button">
+                    <span class="glyphicon glyphicon-plus"></span>
+                    Add Item
+                </button>
+            </div>
+        </div>
+        <table class="table table-condensed table-hover">
+            @*<caption>Items purchased</caption>*@
+            <thead>
+                <tr>
+                    <th class="col-md-4">Product</th>
+                    <th class="col-md-1" >Details</th>
+                    <th class="col-md-3">Description</th>
+                    <th class="col-md-1">Length</th>
+                    <th class="col-md-2">Total Price</th>
+                    <th class="col-md-1"></th>
+                </tr>
+            </thead>
+            <tbody id="itemsbody">
+                <tr class="hidden" id="itemtemplaterow">
+                    <td>
+                        <input type="hidden" name="Items.Index" value="" disabled class="hiddenindexer"/>
+                        <select name="Items[INDEXER].Id" class="form-control combosearch" onchange="updateDetailCols($(this))">
+                            @foreach (var rm in (IEnumerable<RawMaterialProfile>)ViewBag.RawMaterialProfiles)
+                            {
+                                <option value="@rm.Id" data-desc="@rm.Description" data-color="@rm.Color"
+                                        data-thickness="@rm.Thickness" data-type="@rm.Type"
+                                        data-width="@rm.Width">
+                                    @rm.Code  -  @rm.Description
+                                </option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <a tabindex="0" class="btn btn-sm btn-link detailpopup" role="button" data-toggle="popover" data-trigger="focus"
+                            title="Popover Title" data-content="Content goes here">Info</a>
+                    </td>
+                    <td><input name="Items[INDEXER].Description" type='text' placeholder="Description" class="form-control input-sm desc" value="" /></td>
+                    <td><input name="Items[INDEXER].Qty" type='number' placeholder="Qty" class="form-control input-sm qty" value="1" /></td>
+                    <td><input name="Items[INDEXER].Price" type='number' placeholder="Price" class="form-control input-sm price"
+                 onchange="updateTotal()" /></td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="deleteRow(this)">
+                            <span class="glyphicon glyphicon-remove"></span>
+                            Remove
+                        </button>
+                    </td>
+                </tr>
+                <tr id="emptylistmessage">
+                    <td colspan="8" class="text-center"><span >No items added to Invoice</span></td>
+                </tr>
+                <tr id='totalrow'>
+                    <th colspan="4"> Total </th>
+                    <td id="itemtotal"> 0.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        @*<h3>Payments</h3>
+
+        <div class="form-group">
+            <div class="col-md-10">
+                <button class="btn btn-sm btn-success" onclick="addCashPayment()" type="button">
+                    <span class="fa fa-money"></span>
+                    Add Cash Payment
+                </button>
+                <button class="btn btn-sm btn-success" onclick="addChequePayment()" type="button">
+                    <span class="fa fa-newspaper-o"></span>
+                    Add Cheque Payment
+                </button>
+            </div>
+        </div>
+        <table class="table table-condensed hidden" id="cashtable">
+            <caption> <strong>Cash Payments</strong> </caption>
+            <thead>
+                <tr>
+                    <th class="col-md-1">Method</th>
+                    <th class="col-md-2">RefNo</th>
+                    <th class="col-md-3">Description</th>
+                    <th class="col-md-2">Amount</th>
+                    <th class="col-md-1"></th>
+                </tr>
+            </thead>
+            <tbody id="cashbody">
+                <tr class="hidden" id="cashtemplaterow">
+                    <td>Cash</td>
+                    <td><input type='text' placeholder="Reference" class="form-control input-sm ref" /></td>
+                    <td><input type='text' placeholder="Description" class="form-control input-sm desc"  /></td>
+                    <td>
+                        <input type='number' placeholder="Amount" class="form-control input-sm amount"
+                               onchange="updateTotal()" />
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="deleteCashPayment(this)">
+                            <span class="glyphicon glyphicon-remove"></span>
+                            Remove
+                        </button>
+                    </td>
+                </tr>
+                <tr id='cashtotalrow'>
+                    <th colspan="3"> Total </th>
+                    <td id="cashtotal"> 0.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="table table-condensed hidden" id="chequetable">
+            <caption> <strong>Cheque Payments</strong> </caption>
+            <thead>
+                <tr>
+                    <th class="col-md-2">Method</th>
+                    <th class="col-md-3">Description</th>
+                    <th class="col-md-1">Bank</th>
+                    <th class="col-md-1">Cheque No</th>
+                    <th class="col-md-2">SettleDate</th>
+                    <th class="col-md-2">Amount</th>
+                    <th class="col-md-1"></th>
+                </tr>
+            </thead>
+            <tbody id="chequebody">
+                <tr class="hidden" id="chequetemplaterow">
+                    <td>Cheque</td>
+                    <td><input type='text' placeholder="Description" class="form-control input-sm desc" /></td>
+                    <td><input type='text' placeholder="Bank" class="form-control input-sm bank" /></td>
+                    <td><input type='text' placeholder="Cheque No." class="form-control input-sm chequeno" /></td>
+                    <td><input type='date' placeholder="Settle Date" class="form-control input-sm settledate" /></td>
+                    <td>
+                        <input type='number' placeholder="Amount" class="form-control input-sm amount"
+                               onchange="updateTotal()" />
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="deleteChequePayment(this)">
+                            <span class="glyphicon glyphicon-remove"></span>
+                            Remove
+                        </button>
+                    </td>
+                </tr>
+                @*<tr id="emptylistmessage" class="hidden">
+                    <td colspan="8" class="text-center"><span>No cash payments</span></td>
+                </tr>
+                <tr id='chequetotalrow'>
+                    <th colspan="5"> Total </th>
+                    <td id="chequetotal"> 0.00</td>
+                </tr>
+            </tbody>
+         </table>*@
+
+
+        <div class="col-md-7">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Invoice Confirmation</h3>
+                </div>
+                <div class="panel-body">
+                    <table class="table-condensed ">
+                        <tbody>
+                            <tr>
+                                <th>Item Count</th>
+                                <td id="itemCount">
+                                    0.00
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-8">Purchase Total </th>
+                                <td class="col-md-4" id="summarytotal">0.00</td>
+                            </tr>
+                            @*<tr>
+                                <th>Payment Total</th>
+                                <td id="summarypayment">0.00</td>
+                            </tr>*@
+
+                        </tbody>
+                    </table>
+                    <br/>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-2">
+                            <input type="submit" value="Create Invoice" class="btn btn-primary" />
+                        </div>
+                        <div class="col-md-offset-1 col-md-2">
+                            <a href="@Url.Action("Purchases")" class="btn btn-danger">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+</div>
+}
+<br/>
+
+<script>
+    $(function () {
+        updateTotal();
+    })
+</script>
+
+@section Scripts {
+  
+    <script src="~/Scripts/ghm.invoices.js"></script>
+}
+

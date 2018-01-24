@@ -1,0 +1,141 @@
+﻿@model BusinessObjects.Invoice
+@using BusinessObjects.Categories;
+@using BusinessObjects;
+@using GHM_ERP.Util;
+
+@{
+    ViewBag.Title = "Sales Order Details";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div id="section-to-print">
+    <h4>Invoice</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            Order No.
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FormattedInvoiceNo)
+        </dd>
+        <dt>
+            Client
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Client.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Time)
+        </dt>
+
+        <dd>
+            @Html.FormatAsDateTime(Model.Time)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SalesRep)
+        </dt>
+
+        <dd>
+            @if (Model.SalesRep != null)
+            {
+                @Html.ActionLink(Model.SalesRep.FullName, "Details", "SalesRep", new { id = Model.SalesRepId.Value }, new { })
+            }
+            else
+            {
+                <em>None</em>
+            }
+
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+    </dl>
+
+    <a href="@Url.Action("NewSale", "SalesOrder", new { id = @Model.Id})" class="btn btn-info no-print">New Sale from Order</a>
+    <hr />
+    <h4>Items</h4>
+    <table class="table table-condensed table-striped">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Type</th>
+                <th>Length</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                var prof = (ProductProfile)item.Profile;
+                <tr>
+                    <td>@prof.Code - @prof.Description</td>
+                    <td>@prof.Type</td>
+                    
+                    <td>@item.Length</td>
+                    <td>@item.Qty</td>
+                    <td> @Html.FormatAsMoney(item.UnitPrice) </td>
+                    <td>@Html.FormatAsMoney(item.Price)</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="5">Total</th>
+                <td>@Html.FormatAsMoney(Model.Items.Sum(i => i.Price))</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <h4>Related Sales</h4>
+    <table class="table table-condensed">
+        <tr>
+            <th>Invoice No.</th>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Total</th>
+            <td></td>
+        </tr>
+        @{ 
+            var relatedSales = (IEnumerable<Invoice>) ViewBag.RelatedSales;
+        }
+        @foreach (Invoice sale in relatedSales)
+        {
+            <tr>
+                <td>@sale.FormattedInvoiceNo</td>
+                <td>@Html.FormatAsDateTime(sale.Time)</td>
+                <td>@sale.Description</td>
+                <td>@Html.FormatAsMoney(sale.GetTotal())</td>
+                <td>@Html.ActionLink("Details","SaleDetails","ProductInvoice",new { id =sale.Id },new { })</td>
+            </tr>
+        }
+        @if(!relatedSales.Any())
+        {
+            <tr>
+                <td class="text-center" colspan="5">
+                    <em>No sales for this order</em>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+<p>
+
+    @Html.ActionLink("Back to List", "Index")
+</p>
+
+
+@section Scripts {
+    <link href="~/Content/printstyles.css" rel="stylesheet" />
+}

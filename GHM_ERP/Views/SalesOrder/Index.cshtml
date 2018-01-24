@@ -1,0 +1,61 @@
+﻿@model IEnumerable<BusinessObjects.Invoice>
+@using GHM_ERP.Util
+@{
+    ViewBag.Title = "Recent Sales Orders";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+    @Html.ActionLink("New Order", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Order No.
+        </th>
+        <th>
+            Client
+        </th>
+        <th>
+            Date
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            Sales Rep
+        </th>
+        <th>
+           Total
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.ActionLink(item.FormattedInvoiceNo,"Details",new {id =item.Id} )
+        </td>
+        <td>
+            @item.Client.Name
+        </td>
+        <td>
+            @Html.FormatAsDateTime(item.Time)
+        </td>
+        <td>
+            @item.Description
+        </td>
+        <td>
+            @(item.SalesRepId.HasValue ? item.SalesRep.FullName : "-")
+        </td>
+        <td>
+            @Html.FormatAsMoney(item.GetTotal())
+        </td>
+        <td>
+            @Html.ActionLink("Details", "Details", new { id = item.Id })
+        </td>
+    </tr>
+}
+
+</table>

@@ -1,0 +1,52 @@
+﻿@model BusinessObjects.Categories.AccountProfile
+@using BusinessObjects;
+@using BusinessObjects.Accounting;
+
+@{
+    ViewBag.Title = "New Account Profile";
+}
+
+<h2>New Account Profile</h2>
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+
+        <hr />
+        @Html.ValidationSummary(false)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Description)
+            </div>
+        </div>
+        @{
+             var accs = (IEnumerable<Account>)ViewBag.Accounts;
+             Account.AccountTypes[] skipTypes = new[] {Account.AccountTypes.CurrentAssets_Customer, Account.AccountTypes.CurrentLiability_Supplier };
+             accs = accs.Where(ac => !skipTypes.Contains(ac.AccountType));
+        }
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.AccountId, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(acProf => acProf.AccountId, new SelectList(accs,"Id","Name"),new {@class="form-control combosearch"})
+
+                @Html.ValidationMessageFor(model => model.AccountId)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

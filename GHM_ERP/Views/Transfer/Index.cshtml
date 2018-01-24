@@ -1,0 +1,49 @@
+﻿@model IEnumerable<BusinessObjects.Invoice>
+
+@{
+    ViewBag.Title = "Recent Transfer Invoices";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+    @Html.ActionLink("New Asset Transfer", "NewAsset") | 
+    @Html.ActionLink("New Liability Transfer", "NewLiability") |
+    @Html.ActionLink("New General Transfer", "Create") |
+    @Html.ActionLink("New Bulk Transfer", "MassTransfer") 
+</p>
+<table class="table">
+    <tr>
+        <th>
+          Invoice No.
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Time)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+
+
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.ActionLink(item.FormattedInvoiceNo , "Details", new { id = item.Id })
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Time)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+
+        <td>
+             @Html.ActionLink("Details", "Details", new { id=item.Id })
+        </td>
+    </tr>
+}
+
+</table>

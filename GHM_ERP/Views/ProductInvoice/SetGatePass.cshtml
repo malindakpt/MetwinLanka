@@ -1,0 +1,85 @@
+﻿@model BusinessObjects.Invoice
+@using GHM_ERP.Util
+
+@{
+    ViewBag.Title = "Set Gate Pass";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div>
+    <h4>Invoice</h4>
+    <hr />
+    @Html.AlertPanel()
+
+    <dl class="dl-horizontal">
+        <dt>
+            Invoice No.
+        </dt>
+
+        <dd>
+            <a href="@Url.Action("SaleDetails",new {id = Model.Id})" >
+                @Model.FormattedInvoiceNo <em>(Details)</em>
+            </a>
+        </dd>
+        <dt>
+            Client
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Client.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Time)
+        </dt>
+
+        <dd>
+            @Html.FormatAsDateTime(Model.Time)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SalesRep)
+        </dt>
+
+        <dd>
+            @if (Model.SalesRep != null)
+            {
+                @Html.ActionLink(Model.SalesRep.FullName, "Details", "SalesRep", new { id = Model.SalesRepId.Value }, new { })
+            }
+            else
+            {
+                <em>None</em>
+            }
+
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+    </dl>
+
+    @using(Html.BeginForm())
+    {
+        <div class="form-horizontal">
+           <div class="form-group">
+                @Html.LabelFor(model => model.GatePassRef, new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextBox("gatepass",Model.GatePassRef ?? "" , new { @class = "form-control", required = true })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<p>
+    @Html.ActionLink("Recent Sales", "Sales")
+</p>

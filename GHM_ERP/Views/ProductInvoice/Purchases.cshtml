@@ -1,0 +1,59 @@
+﻿@model IEnumerable<BusinessObjects.Invoice>
+@using GHM_ERP.Util;
+
+@{
+    ViewBag.Title = "Purchases";
+}
+
+<h2>Recently Dated Purchases</h2>
+
+<p>
+    @Html.ActionLink("New Purchase", "EditPurchases")
+</p>
+<table class="table">
+    <tr>
+        <th>
+           Invoice Id
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Client)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Time)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            Total
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.ActionLink(item.FormattedInvoiceNo, "PurchaseDetails", new { id = item.Id })
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Client.Name)
+        </td>
+        <td>
+            @Html.FormatAsDateTime(item.Time)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+        <td>
+            @Html.FormatAsMoney(item.GetTotal())
+        </td>
+
+        <td>
+            @*@Html.ActionLink("Edit", "Edit", new { id=item.Id }) |*@
+            @Html.ActionLink("Details", "PurchaseDetails", new { id=item.Id }) 
+            @*@Html.ActionLink("Delete", "Delete", new { id=item.Id })*@
+        </td>
+    </tr>
+}
+
+</table>

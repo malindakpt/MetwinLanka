@@ -1,0 +1,161 @@
+﻿@model BusinessObjects.Invoice
+@using BusinessObjects.Categories;
+@using BusinessObjects;
+@using GHM_ERP.Util;
+
+@{
+    ViewBag.Title = "Purchase Details";
+}
+
+
+
+<div id="section-to-print">
+    <h2>Purchase Details</h2>
+
+    <h4>Invoice</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.FormattedInvoiceNo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FormattedInvoiceNo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ClientId)
+        </dt>
+
+        <dd>
+        
+            @Html.ActionLink(Model.Client.Name,"Details","Supplier",new { id=Model.ClientId },new { })
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Time)
+        </dt>
+
+        <dd>
+            @Html.FormatAsDateTime(Model.Time)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Status)
+        </dt>
+
+        <dd>
+            @Html.InvoiceStatusDisplay(Model.Status)
+        </dd>
+
+    </dl>
+    <hr />
+    <h4>Items</h4>
+    <table class="table table-condensed table-striped">
+        <thead>
+            <tr>
+                <th>Raw Material</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                var prof = (RawMaterialProfile)item.Profile;
+                <tr>
+                    <td>@Html.ActionLink(prof.Code + " - " + prof.Description, "Details", "RawMaterialProfile", new { id = prof.Id }, new { })
+                    </td>
+                    <td>@prof.Type</td>
+                    <td>@item.Description</td>
+                    <td>@item.Qty</td>
+                    <td>@Html.FormatAsMoney(item.Price)</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="4">Total</th>
+                <th>@Html.FormatAsMoney(Model.Items.Sum(i => i.Price))</th>
+            </tr>
+        </tfoot>
+    </table>
+    <hr />
+    <h4>Payment Receipts</h4>
+    <table class="table table-condensed table-striped">
+        <thead>
+            <tr>
+                <th>Method</th>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Details</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        @{
+            var showingPayments = Model.PaymentReceipts.Where(rec => rec.PaymentMethod != PaymentReceipt.PaymentType.Credit &&
+                                                    rec.Status == PaymentReceipt.PaymentStatus.Accepted).ToList();
+        }
+        <tbody>
+            @foreach (var item in showingPayments)
+            {
+                <tr>
+                    <td>@item.PaymentMethod</td>
+                    <td>@Html.FormatAsDateTime(item.Time)</td>
+                    <td>@item.Description</td>
+                    <td>
+                        @if(!string.IsNullOrWhiteSpace(item.RefNo))
+                        {
+                           <strong>Reference:</strong> @item.RefNo
+                        }
+                        @if(item.ChequeId.HasValue)
+                        {
+                            <br/>
+                            <strong>Bank:</strong> @item.ChequeRef.Bank 
+                            <br/>
+                            <strong>Cheque No:</strong> @item.ChequeRef.ChequeNo
+                            if (item.ChequeRef.SettleDate.HasValue)
+                            {
+                                <br />
+                                <strong>Settle Date:</strong> @Html.FormatAsDate(item.ChequeRef.SettleDate.Value)
+                            }
+                        }
+                    </td>
+                    <td>@Html.FormatAsMoney(item.Amount)</td>
+                </tr>
+            }
+            @if (!showingPayments.Any())
+            {
+                <tr>
+                    <td class="text-center" colspan="5"> <em>No payments</em></td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="4">Total</th>
+                <th>@Html.FormatAsMoney(showingPayments.Sum(i => i.Amount))</th>
+            </tr>
+        </tfoot>
+    </table>
+
+
+</div>
+<p>
+
+    @Html.ActionLink("Back to List", "Purchases")
+</p>
+
+
+@section Scripts {
+   
+}

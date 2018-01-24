@@ -1,0 +1,115 @@
+﻿@model BusinessObjects.Categories.ProductProfile
+@using GHM_ERP.Util;
+@{
+    ViewBag.Title = "Product Profile Details";
+}
+
+<h2>Profile Details</h2>
+
+<div>
+    <h4>@Model.Code - @Model.Description </h4>
+    <hr />
+    <dl class="dl-horizontal">
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Code)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Code)
+        </dd>
+
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Type)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Type)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Color)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Color)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Thickness)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Thickness)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Width)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Width)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ProductWidth)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ProductWidth)
+        </dd>
+
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UnitPrice)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UnitPrice)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsEnabled)
+        </dt>
+
+        <dd>
+            @Html.ActivenessDisplayFor(model => model.IsEnabled)
+        </dd>
+
+
+        <dt>@Html.DisplayNameFor(model=>model.RawMaterialProfiles)</dt>
+        <dd>
+            @if(Model.RawMaterialProfiles.Count > 0)
+            { 
+            <ul class="list-group">
+                @foreach (var rm in Model.RawMaterialProfiles)
+                {
+                    <li class="list-unstyled">
+                        @Html.ActionLink(rm.Description, "Details", "RawMaterialProfile", new { id = rm.Id }, new { })
+                    </li>
+                }
+            </ul>
+            }
+            else
+            {
+                 <em>None</em>
+            }
+        </dd>
+
+
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

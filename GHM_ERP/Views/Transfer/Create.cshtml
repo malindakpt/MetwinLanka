@@ -1,0 +1,29 @@
+﻿@model TransferAccountModel
+@using GHM_ERP.Models;
+@using GHM_ERP.Util;
+
+@{
+    ViewBag.Title = "New General Transfer";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<hr />
+
+
+@Html.Partial("_TransferView") 
+
+<script>
+
+  
+</script>
+
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+
+@section Scripts {
+ 
+}

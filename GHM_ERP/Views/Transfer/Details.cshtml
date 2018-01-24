@@ -1,0 +1,85 @@
+﻿@model BusinessObjects.Invoice
+@using GHM_ERP.Util
+
+@{
+    ViewBag.Title = "Transfer Details";
+}
+
+<h2>@ViewBag.Title </h2>
+
+<div>
+    <h4>Transfer</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.FormattedInvoiceNo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FormattedInvoiceNo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Time)
+        </dt>
+
+        <dd>
+            @Html.FormatAsDateTime(Model.Time)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        @{ 
+            var receipt = Model.PaymentReceipts.First();
+        }
+
+        <dt>
+            Reference
+        </dt>
+
+        <dd>
+            @receipt.RefNo
+        </dd>
+
+        <dt>
+            From Account
+        </dt>
+
+        <dd>
+            @receipt.TransferFrom.Name 
+        </dd>
+
+        <dt>
+            To Account
+        </dt>
+
+        <dd>
+            @receipt.TransferTo.Name
+        </dd>
+
+        <dt>
+            Amount
+        </dt>
+
+        <dd>
+            @receipt.Amount
+        </dd>
+
+        <dt>
+            Status
+        </dt>
+
+        <dd>
+            @Html.InvoiceStatusDisplay(Model.Status)
+        </dd>
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>

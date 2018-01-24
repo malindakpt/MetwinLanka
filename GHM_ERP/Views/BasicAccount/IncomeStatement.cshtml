@@ -1,0 +1,200 @@
+﻿@model BusinessObjects.IncomeStatement
+
+@{
+    ViewBag.Title = "IncomeStatement";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div>
+
+    @using (Html.BeginForm("IncomeStatement","BasicAccount",FormMethod.Get))
+    {
+        <div class="form-inline">
+            Select Month : @Html.TextBox("mydate", "", new { type = "date" })
+            <input type="submit" value="Submit" class="btn btn-info" />
+        </div>
+        
+    }
+    
+    @if (!@Model.date.Equals( new DateTime(1990,1,1)))
+    {
+        <div class="text-center" style="width:57%">
+            <h2>Metwin Lanka Roofing (pvt)Ltd.</h2>
+            <h3>Income Statement</h3>
+            <h4>For the month of @Model.date.ToString("Y")</h4>
+        </div>
+        
+        
+        <div class="col-md-7">
+            <table class="table table-condensed">
+                <colgroup>
+                    <col class="col-md-4">
+                    <col class="col-md-3">
+                    <col class="col-md-3">
+                </colgroup>
+                <thead>
+                    <tr class="success">
+                        <th>Account</th>
+                        <th>Balance</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Income</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    @foreach (var item in @Model.Income)
+                    {
+                        <tr>
+                            <td>@item.Account.Name</td>
+                            <td class="text-right">@item.Balance.ToString("0.00")</td>
+                            <td></td>
+                        </tr>
+                    }
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <th class="text-right">@Model.IncomeTotal.ToString("0.00")</th>
+                    </tr>
+
+                    <tr>
+                        <th>Cost of Sale</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    @foreach (var item in @Model.CostOfSale)
+                    {
+                        <tr>
+                            <td>@item.Account.Name</td>
+                            <td class="text-right">@item.Balance.ToString("0.00")</td>
+                            <td></td>
+                        </tr>
+                    }
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <th class="text-right">@Model.CostOfSaleTotal.ToString("0.00")</th>
+                    </tr>
+
+                    <tr>
+                        <th>Administration Expences</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    @foreach (var item in @Model.AdministrationExpenses)
+                    {
+                        <tr>
+                            <td>@item.Account.Name</td>
+                            <td class="text-right">@item.Balance.ToString("0.00")</td>
+                            <td></td>
+                        </tr>
+                    }
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <th class="text-right">@Model.AdministrationExpensesTotal.ToString("0.00")</th>
+                    </tr>
+
+                    <tr>
+                        <th>Selling and Distribution Expences</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    @foreach (var item in @Model.SellingAndDistributionExpenses)
+                    {
+                        <tr>
+                            <td>@item.Account.Name</td>
+                            <td class="text-right">@item.Balance.ToString("0.00")</td>
+                            <td></td>
+                        </tr>
+                    }
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <th class="text-right">@Model.SellingAndDistributionExpensesTotal</th>
+                    </tr>
+
+                    <tr>
+                        <th>Salary Expenses</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+
+                    @foreach (var item in @Model.SalaryExpenses)
+                    {
+                        <tr>
+                            <td>@item.Account.Name</td>
+                            <td class="text-right">@item.Balance.ToString("0.00")</td>
+                            <td></td>
+                        </tr>
+                    }
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <th class="text-right">@Model.SalaryExpensesTotal</th>
+                    </tr>
+
+                    <tr>
+                        <th>Financial Cost</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    @foreach (var item in @Model.FinancialCost)
+                    {
+                        <tr>
+                            <td>@item.Account.Name</td>
+                            <td class="text-right">@item.Balance.ToString("0.00")</td>
+                            <td></td>
+                        </tr>
+                    }
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <th class="text-right">@Model.FinancialCostTotal.ToString("0.00")</th>
+                    </tr>
+
+                    <tr>
+                        <th>Other Cost</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    @foreach (var item in @Model.OtherCost)
+                    {
+                        <tr>
+                            <td>@item.Account.Name</td>
+                            <td class="text-right">@item.Balance.ToString("0.00")</td>
+                            <td></td>
+                        </tr>
+                    }
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <th class="text-right">@Model.OtherCostTotal.ToString("0.00")</th>
+                    </tr>
+
+                    <tr>
+                        <th>Gross Profit</th>
+                        <th></th>
+                        <th class="text-right">@Model.GrossProfit.ToString("0.00")</th>
+                    </tr>
+                    <tr>
+                        <th>Net Profit</th>
+                        <th></th>
+                        <th class ="text-right">@Model.NetProfit.ToString("0.00")</th>
+                    </tr>
+                </tbody>
+             </table>
+         </div>
+        
+    }
+
+</div>
+
+@section  Scripts
+{
+    <!-- Graphics libs-->
+    <script src="~/Scripts/raphael-min.js"></script>
+    <script src="~/Scripts/Highcharts-4.0.1/js/highcharts.js"></script>
+}

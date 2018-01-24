@@ -1,0 +1,16 @@
+﻿@using Microsoft.AspNet.Identity
+@if (Request.IsAuthenticated)
+{
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm"}))
+    {
+        @Html.AntiForgeryToken()
+
+        <p style="text-align:center"><a href="#"><img src="~/Content/images/profile.png" class="img-circle" width="60"></a></p>
+        <h5 style="text-align:center"><b>@User.Identity.GetUserName()</b></h5>
+    }
+}
+else
+{
+    <p style="text-align:center"><a href="#"><img src="~/Content/images/profile.png" class="img-circle" width="60"></a></p>
+        <h5 style="text-align:center"><b>Unknown User</b></h5>
+}

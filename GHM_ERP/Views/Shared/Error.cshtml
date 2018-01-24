@@ -1,0 +1,19 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+@using GHM_ERP.Util;
+
+
+@{
+    ViewBag.Title = "Error";
+}
+
+<h1 class="text-warning">Error</h1>
+<h3 class="text-danger">An error occurred </h3>
+
+@if (ViewData.ContainsKey("Message"))
+{
+    <h3 class="text-danger">
+       Description : @Html.HtmlEscapeNewLine((string)ViewBag.Message)
+    </h3>
+
+}
+

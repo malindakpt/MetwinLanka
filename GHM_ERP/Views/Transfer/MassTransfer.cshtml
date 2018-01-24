@@ -1,0 +1,182 @@
+﻿@using GHM_ERP.Models;
+@using GHM_ERP.Util;
+@model MassTransferModel
+
+@{
+    ViewBag.Title = "Bulk Transfer";
+    IEnumerable<BusinessObjects.Account> accounts = ViewBag.Accounts;
+}
+
+<h2>Bulk Transfer</h2>
+<hr/>
+
+@using (Html.BeginForm())
+{
+
+    if (TempData.ContainsKey("InfoMsg"))
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["InfoMsg"]
+        </div> <br />
+    }
+
+    <div class="row">
+        <div class="col-md-7">
+            <div class="form form-horizontal">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Time, new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBox("Time", Html.FormatAsDateTime(DateTime.Now), new { @class = "form-control time", type = "datetime" })
+                        @Html.ValidationMessageFor(model => model.Time)
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Description, new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Description)
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Reference, new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.Reference, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Reference)
+
+                    </div>
+                </div>
+
+            </div>
+         </div>
+     </div>
+
+        <hr/>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Code
+                </th>
+                <th>
+                    Account
+                </th>
+
+                <th class="text-center">
+                    Credit
+                </th>
+                <th class="text-center">
+                    Debit
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in accounts)
+            {
+                var rowId = "ac" + item.Id;
+
+                <tr class="accountRow">
+                    <td>
+                        @item.Code 
+
+                        @Html.Hidden("Transfers.Index",rowId)
+                        @Html.Hidden("Transfers["+rowId+ "].AccountId",item.Id)
+
+                    </td>
+                    <td>
+                        @item.Name
+                    </td>
+                    <td class="form-inline">
+                        <input type="number" class="form-control amountInput creditInput" min="0" step="0.01"
+                                name='@("Transfers["+rowId+ "].CreditAmount")' />
+                        <button class="btn btn-warning btn-sm hidden amountClearBtn">
+                            <i class="glyphicon glyphicon-remove"></i>
+                        </button>
+                    </td>
+                    <td class="form-inline">
+                        <input type="number" class="form-control amountInput debitInput" min="0" step="0.01"
+                                name='@("Transfers["+rowId+ "].DebitAmount")' />
+                        <button class="btn btn-warning btn-sm hidden amountClearBtn">
+                            <i class="glyphicon glyphicon-remove"></i>
+                        </button>
+                    </td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <th></th>
+                <th>Total</th>
+                <th id="creditTotal">0.00</th>
+                <th id="debitTotal">0.00</th>
+            </tr>
+        </tfoot>
+
+
+    </table>
+    <br/>
+
+    @*<div class="form-group">
+        <div class="col-md-offset-2 col-md-2">
+            <input type="submit" id="submitButton" onclick="return validateInvoice()" value="Transfer" class="btn btn-primary" />
+        </div>
+        <div class="col-md-offset-1 col-md-2">
+            <a href="@Url.Action("Index")" class="btn btn-danger">
+                Cancel
+            </a>
+        </div>
+    </div>*@
+
+    <div class="col-md-7">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Transfer Confirmation</h3>
+            </div>
+            <div class="panel-body">
+
+                <!-- error alerts -->
+                <div class="alert alert-danger hidden" id="totalMismatchPanel" >
+                    <strong>Error!</strong>
+                    Credit and Debit totals are not equal
+                </div>
+                <div class="alert alert-danger hidden" id="totalZeroPanel">
+                    <strong>Error!</strong>
+                    Please add amounts to credit or debit
+                </div>
+
+
+
+                <table class="table-condensed ">
+                    <tbody>
+                        <tr>
+                            <th>Total Transfer amount</th>
+                            <td id="totalTransfer">0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-2">
+                        <input type="submit" value="Create Invoice" class="btn btn-primary"  id="btnSubmit"/>
+                    </div>
+                    <div class="col-md-offset-1 col-md-2">
+                        <a href="@Url.Action("Index")" class="btn btn-danger">
+                            Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section Scripts {
+    <script src="~/Scripts/ghm.masstransfer.js"></script>
+}

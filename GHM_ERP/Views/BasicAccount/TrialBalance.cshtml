@@ -1,0 +1,94 @@
+﻿@using GHM_ERP.Util
+@{
+    ViewBag.Title = "Trial Balance";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div>
+
+    @using (Html.BeginForm("TrialBalance", "BasicAccount", FormMethod.Get))
+    {
+        <div class="form-inline">
+            Select Month : @Html.TextBox("mydate", Html.FormatAsDate(DateTime.Now), new { type = "date", @class = "form-control" })
+            <input type="submit" value="Submit" class="btn btn-info" />
+        </div>
+
+    }
+
+    @if (!@Model.Date.Equals(new DateTime(1990, 1, 1)))
+    {
+        <div class="text-center" style="width:57%">
+            <h2>Metwin lanka Roofing (pvt)ltd</h2>
+            <h3>Trial Balance</h3>
+            <h4>As of @Model.Date.ToString("yyyy-MMMM-dd")</h4>
+        </div>
+
+
+        <div class="col-md-7">
+            <table class="table table-condensed">
+                <colgroup>
+                    <col class="col-md-4">
+                    <col class="col-md-3">
+                    <col class="col-md-3">
+                </colgroup>
+                <thead>
+                    <tr class="success">
+                        <th>Code</th>
+                        <th>Account</th>
+                        <th class="text-right">Debit</th>
+                        <th class="text-right">Credit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{decimal credit = 0.0m;}
+                    @{decimal debit = 0.0m;}
+                    @foreach (var item in Model.BalanceList)
+                    {
+                        <tr>
+                            @if (item != null)
+                            {
+                                <td>@item.Account.Code</td>
+                                <td>@item.Account.Name</td>
+                                if (@item.Balance < 0)
+                                {
+                                    decimal dd = @item.Balance;
+                                    dd = dd * (-1);
+                                    credit += dd;
+                                    <td class="text-right">@Html.FormatAsMoney(dd)</td>
+                                    <td class="text-right"></td>
+                                }
+                                else
+                                {
+                                    decimal d = @item.Balance;
+                                    //d = d * (-1);
+                                    debit += d;
+                                    <td class="text-right"></td>
+                                    <td class="text-right">@Html.FormatAsMoney(d)</td>
+                                }
+                            }
+                            
+                           
+                            
+                        </tr>
+                        
+                    }
+                    <tr>
+                        <th colspan="2">TOTAL</th>
+                        <th class="text-right" style="text-decoration: underline;">@Html.FormatAsMoney(credit)</th>
+                        <th class="text-right" style="text-decoration: underline;">@Html.FormatAsMoney(debit)</th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    }
+
+</div>
+
+
+@section  Scripts
+{
+    <!-- Graphics libs-->
+    <script src="~/Scripts/raphael-min.js"></script>
+    <script src="~/Scripts/Highcharts-4.0.1/js/highcharts.js"></script>
+}

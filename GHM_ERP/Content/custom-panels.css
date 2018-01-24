@@ -1,0 +1,137 @@
+﻿
+.huge {
+    font-size: 40px;
+}
+
+.panel-green {
+    border-color: #5cb85c;
+}
+
+.panel-green > .panel-heading {
+    border-color: #5cb85c;
+    color: #fff;
+    background-color: #5cb85c;
+}
+
+.panel-green > a {
+    color: #5cb85c;
+}
+
+.panel-green > a:hover {
+    color: #3d8b3d;
+}
+
+.panel-red {
+    border-color: #d9534f;
+}
+
+.panel-red > .panel-heading {
+    border-color: #d9534f;
+    color: #fff;
+    background-color: #d9534f;
+}
+
+.panel-red > a {
+    color: #d9534f;
+}
+
+.panel-red > a:hover {
+    color: #b52b27;
+}
+
+.panel-yellow {
+    border-color: #f0ad4e;
+}
+
+.panel-yellow > .panel-heading {
+    border-color: #f0ad4e;
+    color: #fff;
+    background-color: #f0ad4e;
+}
+
+.panel-yellow > a {
+    color: #f0ad4e;
+}
+
+.panel-yellow > a:hover {
+    color: #df8a13;
+}
+.panel-greenl {
+    border-color: #66FFFF;
+}
+
+.panel-greenl > .panel-heading {
+    border-color: #66FFFF;
+    color: #fff;
+    background-color: #66FFFF;
+}
+
+.panel-greenl > a {
+    color: #66FFFF;
+}
+
+.panel-greenl > a:hover {
+    color: #66FFFF;
+}
+.panel-greenl {
+    border-color: #66FFFF;
+}
+
+.panel-greena > .panel-heading {
+    border-color: #cc9900;
+    color: #fff;
+    background-color: #cc9900;
+}
+
+.panel-greena > a {
+    color: #cc9900;
+}
+
+.panel-greena > a:hover {
+    color: #cc9900;
+}
+.panel-greenz > .panel-heading {
+    border-color: #cc3399;
+    color: #fff;
+    background-color: #cc3399;
+}
+
+.panel-greenz > a {
+    color: #cc3399;
+}
+
+.panel-greenz > a:hover {
+    color: #cc3399;
+}
+
+.panel-greenc > .panel-heading {
+    border-color: #666699;
+    color: #fff;
+    background-color: #666699;
+}
+
+.panel-greenc > a {
+    color: #666699;
+}
+
+.panel-greenc > a:hover {
+    color: #666699;
+}
+.panel-greend > .panel-heading {
+    border-color: #666699;
+    color: #fff;
+    background-color: #1d4817;
+}
+
+.panel-greend > a {
+    color: #1d4817;
+}
+
+.panel-greend > a:hover {
+    color: #1d4817;
+}
+#bgimg {
+        background-image: url('bckground.jpg');
+    }
+
+

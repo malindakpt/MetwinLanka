@@ -1,0 +1,85 @@
+﻿@model IEnumerable<BusinessObjects.SalesRepComis>
+@using GHM_ERP.Util
+
+
+@{
+    ViewBag.Title = "Sales Rep activities";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Sales by Rep Summary</h2>
+<hr />
+@using (Html.BeginForm("Commisions", "SalesRep",new { id = "" }, FormMethod.Get))
+{
+    <div class="form-inline form-group">
+        Sales Rep:
+ @Html.DropDownList("id",new SelectList(ViewBag.SalesReps,"Id","FullName",ViewBag.RepId),"Select Sales Rep", new { @class = "form-control combosearch" , required="required"})
+
+        Start Date : @Html.TextBox("fromdate", Html.FormatAsDate((DateTime)ViewBag.fromDate), new { type = "date", @class = "form-control input-sm" })
+        End Date : @Html.TextBox("todate", Html.FormatAsDate((DateTime)ViewBag.toDate), new { type = "date", @class = "form-control input-sm" })
+        <input type="submit" value="Submit" class="btn btn-info" />
+    </div>
+
+}
+
+<hr />
+<div id="section-to-print">
+    @if (@ViewBag.RepId != 0)
+    {
+        <h4 class="text-center">
+            Sales Summary for <strong> @ViewBag.Rep.FullName </strong>
+            from @ViewBag.fromDate.ToString("yyyy-MMMM-dd") to @ViewBag.toDate.ToString("yyyy-MMMM-dd")
+        </h4>
+        <table class="table table-hover" >
+            <tr class="success">
+                <th>
+                    Invoice No
+                </th>
+                <th>
+                    Invoice Date
+                </th>
+                <th>
+                    Customer
+                </th>
+                <th  class="text-right">
+                    Invoice Amount (Rs.)
+                </th >
+
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.ActionLink(item.DisplayInvNo, "SaleDetails", "ProductInvoice", new { id = item.inv_no }, new { })
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.inv_date)
+                    </td>
+
+                    <td>
+                        @item.Client
+                    </td>
+                    <td class="text-right">
+                        @Html.FormatAsMoney(item.inv_amount)
+                    </td>
+                    <td></td>
+                </tr>
+            }
+            <tr class="warning">
+                <th>Total Amount</th>
+                <th></th>
+                <th></th>
+                <th class="text-right">@Html.FormatAsMoney(Model.Sum(i => i.inv_amount))</th>
+                <td></td>
+            </tr>
+
+        </table>
+    }
+
+</div>
+
+@section Scripts {
+    <link href="~/Content/printstyles.css" rel="stylesheet" />
+}

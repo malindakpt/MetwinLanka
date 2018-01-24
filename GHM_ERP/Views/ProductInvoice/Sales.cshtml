@@ -1,0 +1,110 @@
+﻿@model IEnumerable<BusinessObjects.Invoice>
+@using GHM_ERP.Util;
+
+
+@{
+    ViewBag.Title = "Sales";
+}
+
+<h2>Recently dated Sales</h2>
+
+<p>
+    @Html.ActionLink("New Sale", "EditSales") 
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.ActionLink("Invoice No.", "Sales", new { filter = "" }, new { })
+        </th>
+        <th>
+            Client
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Time)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+           Total
+        </th>
+        <th>
+            Returns
+        </th>
+        <th> @Html.ActionLink("Due", "Sales", new { filter = "DueAmount" }, new { })
+            
+        </th>
+        <th>
+           @Html.ActionLink("Days", "Sales", new { filter = "DueDate" }, new { })
+        </th>
+        <th></th>
+    </tr>
+@{ 
+
+
+    var returnAmounts =(IDictionary<int,decimal>) ViewBag.ReturnAmounts;
+    var returnPayments = (IDictionary<int, decimal>)ViewBag.ReturnPayments;
+    foreach (var item in Model)
+    {
+
+        if(!returnAmounts.ContainsKey(item.Id))
+        {
+            returnAmounts[item.Id] = 0m;
+        }
+        if (!returnPayments.ContainsKey(item.Id))
+        {
+            returnPayments[item.Id] = 0m;
+        }
+    }
+
+    var rows = Model.Select(inv => new
+    {
+        Invoice = inv,
+        Days = (DateTime.Now - inv.Time),
+        Dues = inv.GetTotal() - inv.GetNonCreditPaymentTotal()- returnAmounts[inv.Id] - returnPayments[inv.Id],
+        Returns = returnAmounts[inv.Id]
+    }).ToList();
+
+    if(ViewBag.Filter == "DueDate")
+    {
+        rows = rows.OrderByDescending(row => row.Days).ToList();
+    }
+    else if(ViewBag.Filter == "DueAmount")
+    {
+        rows = rows.OrderByDescending(row => row.Dues).ToList();
+    }
+}
+
+@foreach (var item in rows) {
+    <tr>
+        <td>
+            @item.Invoice.FormattedInvoiceNo
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Invoice.Client.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Invoice.Time)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Invoice.Description)
+        </td>
+        <td>
+            @Html.FormatAsMoney( item.Invoice.GetTotal())
+        </td>
+        <td>
+            @Html.FormatAsMoney(item.Returns)
+        </td>
+        <td>
+            @Html.FormatAsMoney(item.Dues)
+        </td>
+        <td>
+            @((int)@item.Days.TotalDays) Days
+        </td>
+        <td>
+            @Html.ActionLink("Details", "SaleDetails", new { id=item.Invoice.Id }) 
+        </td>
+    </tr>
+}
+
+</table>

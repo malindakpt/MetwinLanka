@@ -1,0 +1,137 @@
+﻿@model BusinessObjects.Invoice
+@using GHM_ERP.Util
+
+@{
+    ViewBag.Title = "VAT Invoice";
+    var configMan = new BusinessLogic.ConfigManager();
+}
+
+
+
+<table width="100%">
+    <tr>
+    <td>
+        <img src="~/Content/images/metwinicon.png" alt="metwin logo" />
+    </td>
+    <td >
+        <p class="text-right">
+            @Html.HtmlEscapeNewLine(configMan.Address)
+            @{
+                var vatNumber = configMan.VatNumber;
+            }
+            @if(!string.IsNullOrWhiteSpace(vatNumber))
+            {
+                <br/>
+                <text>VAT #</text> @vatNumber
+            }
+            
+        </p>
+    </td>
+    </tr>
+</table>
+<hr/>
+
+<h2 class="text-center">VAT Invoice</h2>
+<div class="panel panel-info">
+    <div class="panel-heading">Sale info</div>
+    <div class="panel-body">
+        <table width="100%">
+            <tr>
+                <td>
+                    <p>
+                        <strong>Invoice No:</strong> @Model.FormattedInvoiceNo
+                    </p>
+                    <p>
+                        <strong>Date:</strong> @Html.FormatAsDate(Model.Time)
+                    </p>
+                </td>
+                <td class="text-right">
+                    <strong>Client :</strong> <br />
+                    @Model.Client.Name
+                    <br />
+                    @Html.HtmlEscapeNewLine(Model.Client.Address)
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+@* Items *@
+
+@{ 
+    var invoiceTotal = Model.GetTotal();
+    var vatTotal = Model.PaymentReceipts.Where(pr => pr.IsTaxReceipt == true).Select(pr => pr.Amount).FirstOrDefault();
+    var taxFraction = vatTotal / (invoiceTotal - vatTotal);
+    var taxPercentage = taxFraction.ToString("0.00%");
+    var baseFraction = 1 /(1+ taxFraction);
+    var cumulativeTotal = 0.0m;
+
+    var showUnitPrice = configMan.HideUnitPriceInVatInvoice == false;
+    var unitPriceCols = showUnitPrice ? 1 : 0;
+}
+
+<table class="table table-striped table-condensed">
+    <thead>
+        <tr>
+            <th>Product</th>
+            @if (showUnitPrice)
+            {
+                <th>Unit Price</th>
+            }
+            <th>Length</th>
+            <th>Qty</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                @{
+                    var basePrice =decimal.Round(item.Price * baseFraction, 2);
+                    var baseUnitPrice = basePrice / (item.Length * item.Qty);
+                    cumulativeTotal += basePrice;
+                }
+
+                <td>@item.Profile.Description</td>
+                @if (showUnitPrice)
+                {
+                    <td>@Html.FormatAsMoney(baseUnitPrice)</td>
+                }
+                <td>@item.Length</td>
+                <td>@item.Qty</td>
+                <td>
+                    @Html.FormatAsMoney(basePrice)
+                </td>
+            </tr>
+        }
+    </tbody>
+    @{ 
+        var totalVat = invoiceTotal - cumulativeTotal;
+    }
+    <tfoot>
+        <tr class="text">
+            <td colspan="@(4 + unitPriceCols)"></td>
+        </tr>
+        <tr>
+            <th colspan="@(2 + unitPriceCols)" ></th>
+            <th>Subtotal</th>
+            <td> @Html.FormatAsMoney(cumulativeTotal)</td>
+        </tr>
+        <tr>
+            <th colspan="@(2 + unitPriceCols)"></th>
+            <th >VAT @taxPercentage </th>
+            <td>@Html.FormatAsMoney(totalVat)</td>
+        </tr>
+        <tr>
+            <th colspan="@(2 + unitPriceCols)"></th>
+            <th >Total </th>
+            <td>@Html.FormatAsMoney(invoiceTotal)</td>
+        </tr>
+    </tfoot>
+</table>
+
+
+<p class="no-print">
+    @Html.ActionLink("Back to List", "Sales","ProductInvoice")
+</p>

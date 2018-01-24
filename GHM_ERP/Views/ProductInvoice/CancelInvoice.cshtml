@@ -1,0 +1,142 @@
+﻿@model BusinessObjects.Invoice
+@using GHM_ERP.Util
+@using BusinessObjects
+
+
+@{
+    ViewBag.Title = "Cancel Invoice";
+}
+
+<h2>Cancel Invoice</h2>
+
+<div>
+    <h4>Search Invoice</h4>
+    <hr />
+    @*===================== Search Form =====================*@
+    <form class="form form-horizontal" action="@Url.Action("CancelInvoice", new {id ="" })" method="get">
+        <div class="form-group">
+            <label for="id" class="control-label col-md-2">Invoice No.</label>
+            <div class="col-md-10">
+                <input type="text" name="id" value="@ViewBag.Id" id="id" required class="form-control" />
+                @Html.ValidationMessage("id")
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="invoiceType" class="control-label col-md-2">Invoice Type</label>
+            <div class="col-md-10">
+                <select name="invoiceType" class="form-control" id="invoiceType" required>
+                    @{
+                        var validTypes = ViewBag.CancellableInvoices;
+                        var currentType = (Invoice.TansactionTypes?)(ViewBag.invoiceType ?? null);
+                        foreach (var type in validTypes)
+                        {
+                            <option value="@type" @(currentType == type ? "selected" : "") >@type</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Search" class="btn btn-primary" />
+            </div>
+        </div>
+    </form>
+
+<hr />
+@Html.AlertPanel()
+
+    @*===================== Info Display =====================*@
+@if (Model != null)
+{
+    <h4>Invoice Details</h4>
+    <dl class="dl-horizontal">
+        <dt>
+            Invoice No.
+        </dt>
+
+        <dd>
+            @Model.FormattedInvoiceNo
+        </dd>
+
+        <dt>
+            Invoice Type
+        </dt>
+
+        <dd>
+            @Model.TransType
+        </dd>
+
+        <dt>
+            Status
+        </dt>
+
+        <dd>
+            @Html.InvoiceStatusDisplay(Model.Status)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ClientId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Client.Name)
+        </dd>
+
+        <dt>
+            Date
+        </dt>
+
+        <dd>
+            @Html.FormatAsDateTime(Model.Time)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        <dt>
+            Total
+        </dt>
+
+        <dd >
+            @Html.FormatAsMoney(Model.Items.Any() ? Model.GetTotal(): Model.GetNonCreditPaymentTotal())
+        </dd>
+
+        @if (Model.SalesRepId.HasValue)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.SalesRepId)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.SalesRep.FullName)
+            </dd>
+        }
+
+
+    </dl>
+    
+    if(Model.Status != Invoice.InvoiceStatus.Cancelled)
+    { 
+        using(Html.BeginForm())
+        {
+       
+            <div class="form form-horizontal">
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        @Html.Hidden("Confirmed", "True")
+                        @Html.Hidden("InvoiceId", Model.Id)
+                        <input type="submit" value="Cancel Invoice" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel invoice @(Model.FormattedInvoiceNo) ?')" />
+                    </div>
+                </div>
+             </div>
+        }
+    }
+}
+</div>

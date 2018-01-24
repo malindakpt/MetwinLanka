@@ -1,0 +1,141 @@
+﻿@model BusinessObjects.Invoice
+@using GHM_ERP.Util
+          
+
+@{
+    ViewBag.Title = "New Sales Return";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm()) 
+{    
+    <div class="form-horizontal">
+        <hr />
+        @* Top Original sales info *@
+        <dl class="dl-horizontal">
+
+            <dt>
+                Invoice No.
+            </dt>
+
+            <dd>
+                @Html.ActionLink(Model.FormattedInvoiceNo, "SaleDetails", "ProductInvoice", new { id = Model.Id }, new { })
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ClientId)
+            </dt>
+
+            <dd>
+                @Model.Client.Name
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Time)
+            </dt>
+
+            <dd>
+                @Html.FormatAsDateTime(Model.Time)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Description)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Description)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.SalesRep)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.SalesRep.FullName)
+            </dd>
+         </dl>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Time, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBox("Date", Html.FormatAsDateTime(DateTime.Now).ToString(), new { @class = "form-control time", type = "datetime", required = true })
+                @Html.ValidationMessage("Date")
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            @Html.Label("Description", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBox("Description","", new { @class = "form-control", required=true })
+                @Html.ValidationMessage("Description")
+            </div>
+        </div>
+
+        <hr/>
+        @if(TempData.ContainsKey("ErrorMsg"))
+        {
+            <span class="text-danger" >
+                @TempData["ErrorMsg"]
+            </span>
+        }
+        
+            @Html.ValidationSummary(true)
+
+            @Html.Hidden("InvoiceId",@Model.Id)
+
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Unit Price</th>
+                        <th>Price</th>
+                        <th>Length</th>
+                        <th>Return Qty</th>
+                        <th>Return Value</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr data-purchase-qty="@item.Qty" data-unit-price="@item.UnitPrice" data-length="@item.Length" class="itemrow">
+                            <td>@item.Profile.Description</td>
+                            <td>@item.Qty</td>
+                            <td>@Html.FormatAsMoney(item.UnitPrice)</td>
+                            <td>@Html.FormatAsMoney(item.Price)</td>
+                            <td>@item.Length</td>
+                            <td>
+                                <input name="ReturnedItems.Index" value="@item.Id" type="hidden">
+                                <input name="ReturnedItems[@item.Id].ItemId" value="@item.Id" type="hidden">
+                                <input name="ReturnedItems[@item.Id].ReturnQty" type="number" value="0" min="0" max="@item.Qty"
+                                       required class="form-control input-sm retqty" style="width:75px;" />
+                            </td>
+                            <td class="retvalue">0.00</td>
+                        </tr>
+                    }
+                </tbody>
+
+                <tfoot>
+                    <tr class="summaryrow success">
+                        <th colspan="5">Total</th>
+                        <th id="totalRetQty">0</th>
+                        <th id="totalRetPrice">@Html.FormatAsMoney(0)</th>
+                    </tr>
+                </tfoot>
+            </table>
+
+
+    </div>
+    
+    <div class="text-center">
+        <input type="submit" value="Add Sales Return"  class="btn btn-primary" />
+       @Html.ActionLink("Back to Search", "FindInvoice", new { }, new { @class = "btn btn-danger" })
+    </div>
+}
+
+@section Scripts {
+<script src="~/Scripts/ghm.salesreturns.js"></script>
+}

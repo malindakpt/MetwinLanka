@@ -1,0 +1,57 @@
+﻿@model IEnumerable<BusinessObjects.Invoice>
+@using GHM_ERP.Util
+
+
+@{
+    ViewBag.Title = "Recent Sales Returns";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+    @Html.ActionLink("Create New", "FindInvoice")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Invoice No.
+        </th>
+        <th>
+           Client
+        </th>
+        <th>
+           Date
+        </th>
+        <th>
+           Description
+        </th>
+        <th>
+            Related Sale
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.ActionLink(item.FormattedInvoiceNo, "Details", new { id=item.Id})
+        </td>
+        <td>
+            @item.Client.Name
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Time)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+
+        <td>
+        
+            @Html.ActionLink("Original Sale", "SaleDetails", "ProductInvoice", new { id = item.RelatedInvoiceId.Value }, null)
+        </td>
+
+        
+    </tr>
+}
+
+</table>

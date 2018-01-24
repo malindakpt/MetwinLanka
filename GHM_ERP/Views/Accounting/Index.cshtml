@@ -1,0 +1,151 @@
+﻿@model IEnumerable<BusinessObjects.Accounting.AccountRecord>
+@using GHM_ERP.Util
+@{
+    ViewBag.Title = "Account Details";
+}
+
+
+@*
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "signupform" }))
+{
+    
+<h2>Account Search</h2>
+    <select id="sel1" name="id"  class="combosearch" style="width:200px" onchange="loadAccount()" type="submit">
+        @foreach (BusinessObjects.Account ac in ViewBag.accountList)
+        {
+            <option value="@ac.Id">@ac.Name</option>
+        }
+    </select>    
+}
+    *@
+@using (Html.BeginForm("Index", "Accounting", FormMethod.Get))
+{
+    <h2>Account Search</h2>
+    <div class="form-inline form-group">
+        <select id="sel1" name="id" class="combosearch" style="width:200px">
+            @foreach (BusinessObjects.Account ac in ViewBag.accountList)
+            {
+                <option value="@ac.Id">@ac.Name</option>
+            }
+        </select> 
+        Start Date : @Html.TextBox("fromdate", Html.FormatAsDate((DateTime)ViewBag.FromDate), new { type = "date", @class = "form-control" })
+        End Date : @Html.TextBox("todate", Html.FormatAsDate((DateTime)ViewBag.ToDate), new { type = "date", @class = "form-control" })
+        <input type="submit" value="Submit" class="btn btn-info" />
+    </div>
+
+}
+
+<h3>
+    @*@Html.ActionLink("Create New", "Create")*@
+    @ViewBag.accountName Account
+    
+</h3>
+
+<table class="table table-condensed">
+    <thead>
+        <tr class="success">
+            <th>
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Desc)
+            </th>
+            <th class="text-right">
+                @Html.DisplayNameFor(model => model.Debit)
+            </th>
+            <th class="text-right">
+                @Html.DisplayNameFor(model => model.Credit)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+
+    @{
+        decimal creditTotal = 0;
+        decimal debitTotal = 0;
+    }
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td width="20%">
+                @Html.FormatAsDateTime(item.Date)
+            </td>
+            <td width="25%">
+                @Html.DisplayFor(modelItem => item.Desc)
+            </td>
+            <td class="text-right" width="20%">
+                @if (item.Debit != 0)
+                {
+                    @Html.FormatAsMoney(item.Debit)
+                }else
+                {
+                    <p>-</p>
+                }             
+                  
+    
+                @{
+                    debitTotal += item.Debit;
+                }
+            </td>
+            <td class="text-right" width="20%">
+                @if (item.Credit != 0)
+                {
+                @Html.FormatAsMoney(item.Credit)
+                    }else
+                {
+                    <p>-</p>
+                }
+                @{
+                    creditTotal += item.Credit;
+                }
+            </td>
+            <td>
+                @*@Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
+                    @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id=item.Id })*@
+            </td>
+        </tr>
+    }
+
+    @{
+        decimal finalvalue = debitTotal - creditTotal;
+    }
+    <thead>
+        <tr>
+            <th></th>
+            <th></th>
+            <th class="text-right" width="20%">
+                @if(finalvalue>0){
+                    @Html.FormatAsMoney(finalvalue);
+                }
+            </th>
+            <th class="text-right" width="20%">
+                @if (finalvalue < 0)
+                {
+                    finalvalue = finalvalue * (-1);
+                    @Html.FormatAsMoney(finalvalue);
+                }
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+
+</table>
+
+ 
+<script type='text/javascript'>
+
+    var pageId = '@ViewBag.pageId';
+
+    var element = document.getElementById("sel1");
+    element.value = pageId;
+ 
+    function loadAccount()
+    {
+        document.getElementById("signupform").submit();
+        document.signupform.submit();
+       
+    }
+ 
+</script>

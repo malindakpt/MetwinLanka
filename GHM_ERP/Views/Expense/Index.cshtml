@@ -1,0 +1,61 @@
+﻿@model IEnumerable<BusinessObjects.Invoice>
+@using GHM_ERP.Util
+
+
+@{
+    ViewBag.Title = "Recent Expenses";
+}
+
+<h2>Recent Expenses</h2>
+
+<p>
+    @Html.ActionLink("New Expense", "Create")
+</p>
+<table class="table">
+    <tr>
+
+        <th>
+            @Html.DisplayNameFor(model => model.Time)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            Expense Account
+        </th>
+        <th>
+            Amount
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Time)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+        <td>
+            @{
+            var accountMap = ((IEnumerable<BusinessObjects.Account>)ViewBag.Accounts).ToDictionary(acc => acc.Id);
+            }
+            @if(accountMap.ContainsKey(item.RelatedAccountId.Value))
+            {
+                @accountMap[item.RelatedAccountId.Value].Name
+            }
+        </td>
+        <td>
+            @Html.FormatAsMoney( item.GetNonCreditPaymentTotal() )
+        </td>
+        
+        <td>
+            @*@Html.ActionLink("Edit", "Edit", new { id=item.Id }) |*@
+            @Html.ActionLink("Details", "Details", new { id=item.Id }) 
+    @*|  @Html.ActionLink("Delete", "Delete", new { id=item.Id })*@
+        </td>
+    </tr>
+}
+
+</table>

@@ -1,0 +1,268 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Metwin</title>
+
+    <!-- CSS-->
+    @Styles.Render("~/Content/css")
+
+    <link href="~/Content/dashboard.css" rel="stylesheet" />
+    <link href="~/Content/morris.css" rel="stylesheet" />
+    <link href="~/Content/select2.css" rel="stylesheet" />
+    <link href="~/Content/select2-bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-datetimepicker.css" rel="stylesheet" />
+    <link href="~/Content/font-awesome/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Content/custom-panels.css" rel="stylesheet" />
+
+    <link href="~/Content/bootstrap-datepicker3.standalone.min.css" rel="stylesheet" />
+
+   <link href="~/Content/printstyles.css" rel="stylesheet" />
+
+
+    <!-- JAVASCRIPT -->
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @*<script src="~/Scripts/jquery.min.js"></script>*@
+
+
+    @*<script src="~/Scripts/raphael-min.js"></script>
+    <script src="~/Scripts/Highcharts-4.0.1/js/highcharts.js"></script>*@
+
+
+    <script src="~/Scripts/bootstrap-datetimepicker.js"></script>
+    
+    <script src="~/Scripts/select2.js"></script>
+    <script src="~/Scripts/lodash.js"></script>
+    <script src="~/Scripts/bootstrap-datepicker.js"></script>
+
+    @*<script src="~/Scripts/numeral/numeral.js"></script>*@
+
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <!-- custom JS-->
+    <script src="~/Scripts/ghm.common.js"></script>
+    
+    @RenderSection("scripts", required: false)
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("Metwin Roofing", "Index", "Home", null, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    @*<li>@Html.ActionLink("About", "About", "Home")</li>
+                        <li>@Html.ActionLink("Contact", "Contact", "Home")</li>*@
+
+                    <li>@Html.ActionLink("Customers", "Index", "Customer")</li>
+                    <li>@Html.ActionLink("Suppliers", "Index", "Supplier")</li>
+                    <li>@Html.ActionLink("SalesRep", "Index", "SalesRep")</li>
+
+                    <li>@Html.ActionLink("Purchase", "EditPurchases", "ProductInvoice")</li>
+                    <li>@Html.ActionLink("Sell", "EditSales", "ProductInvoice")</li>
+
+                    @*<li>@Html.ActionLink("Product Profiles", "Index", "ProductProfile")</li>
+                        <li>@Html.ActionLink("RawMat Profiles", "Index", "RawMaterialProfile")</li>*@
+
+                </ul>
+                @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-3 col-md-2 sidebar">
+
+                <ul class="nav nav-sidebar">
+                    @Html.Partial("_LoginPartial2")
+
+                    @*<li class="active">
+                           <a href="@Url.Action("Dashboard","Home")">Dashboard<span class="sr-only">(current)</span><span class="glyphicon glyphicon-home pull-right"></span></a>
+                        </li>*@
+
+                    <li>
+                        <a href="#" id="btn-report" data-toggle="collapse" data-target="#salemenu" aria-expanded="false">Sales<span class="caret"></span><span class="glyphicon glyphicon-usd pull-right"></span></a>
+                        <ul class="nav collapse" id="salemenu" role="menu" aria-labelledby="btn-report">
+                            <li><a href="@Url.Action("EditSales","ProductInvoice")">New Sale</a></li>
+                            <li><a href="@Url.Action("Sales","ProductInvoice")">Recent Sales</a></li>
+                            <li><a href="@Url.Action("FindSale","ProductInvoice")">Find Sale</a></li>
+                            <li><a href="@Url.Action("CancelInvoice","ProductInvoice")">Cancel Invoice</a></li>
+
+                            <li>@*<a href="@Url.Action("Create","SalesOrder")">New Order</a>*@</li>
+
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a href="#" id="btn-report" data-toggle="collapse" data-target="#purmenu" aria-expanded="false">Purchases<span class="caret"></span><span class="glyphicon glyphicon-gbp pull-right"></span></a>
+                        <ul class="nav collapse" id="purmenu" role="menu" aria-labelledby="btn-report">
+                            <li><a href="@Url.Action("EditPurchases","ProductInvoice")">New Purchase</a></li>
+                            <li><a href="@Url.Action("Purchases","ProductInvoice")">Recent Purchases</a></li>
+                            <li><a href="@Url.Action("FindPurchase", "ProductInvoice")">Find Purchase</a></li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a href="#" id="btn-report" data-toggle="collapse" data-target="#salesreturnmenu" aria-expanded="false">Sales Return<span class="caret"></span><span class="glyphicon glyphicon-gbp pull-right"></span></a>
+                        <ul class="nav collapse" id="salesreturnmenu" role="menu" aria-labelledby="btn-report">
+                            <li><a href="@Url.Action("FindInvoice","SalesReturn")">Add Sales Return</a></li>
+                            <li><a href="@Url.Action("Index", "SalesReturn")">Recent Sales Returns</a></li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a href="#" id="btn-saleorder" data-toggle="collapse" data-target="#salesordermenu" aria-expanded="false">Sales Order<span class="caret"></span><span class="glyphicon glyphicon-gbp pull-right"></span></a>
+                        <ul class="nav collapse" id="salesordermenu" role="menu" aria-labelledby="btn-saleorder">
+                            <li><a href="@Url.Action("Index","SalesOrder")">Recent Orders</a></li>
+                            <li><a href="@Url.Action("Create", "SalesOrder")">Add Order</a></li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a href="#" id="btn-report" data-toggle="collapse" data-target="#paymentmenu" aria-expanded="false">Payments and Transfer<span class="caret"></span><span class="glyphicon glyphicon-gbp pull-right"></span></a>
+                        <ul class="nav collapse" id="paymentmenu" role="menu" aria-labelledby="btn-report">
+                            <li><a href="@Url.Action("Send","Payment")">Send Payment</a></li>
+                            <li><a href="@Url.Action("Receive", "Payment")">Receive Payment</a></li>
+                            <li><a href="@Url.Action("SalesReturn", "Payment")">Sales Return Payment</a></li>
+                            <li><a href="@Url.Action("NewLiability", "Transfer")">Liability Transfer</a></li>
+                            <li><a href="@Url.Action("NewAsset", "Transfer")">Assets Transfer</a></li>
+                            <li><a href="@Url.Action("Create", "Transfer")">General Transfer</a></li>
+                            <li><a href="@Url.Action("MassTransfer","Transfer")">Bulk Transfer</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#" id="btn-report" data-toggle="collapse" data-target="#expensemenu" aria-expanded="false">
+                            Expenses and Capital
+                            <span class="caret"></span><span class="glyphicon glyphicon-usd pull-right"></span>
+                        </a>
+                        <ul class="nav collapse" id="expensemenu" role="menu" aria-labelledby="btn-report">
+                            
+                            <li><a href="@Url.Action("Create", "Expense")">New General Expense</a></li>
+                            <li><a href="@Url.Action("Index", "Expense")">Recent General Expenses</a></li>
+                            <li><a href="@Url.Action("Index", "Salary")">Salary Expenses</a></li>
+                            <li><a href="@Url.Action("Push", "Capital")">Add Capital</a></li>
+                            <li><a href="@Url.Action("Pop", "Capital")"> Draw Capital </a></li>
+                            
+                            <li><a href="/Loan/"> Loan Details </a></li>
+                            
+
+                        </ul>
+                    </li>
+
+
+                    <li>
+                        <a href="#" id="btn-report" data-toggle="collapse" data-target="#accmenu2" aria-expanded="false">Account Statements<span class="caret"></span><span class="glyphicon glyphicon-folder-close pull-right"></span></a>
+                        <ul class="nav collapse" id="accmenu2" role="menu" aria-labelledby="btn-report">
+                            <li><a href="/BasicAccount/TrialBalance">Trial Balance</a></li>
+                            <li><a href="/BasicAccount/BalanceSheet">Balance Sheet</a></li>
+                            <li><a href="/BasicAccount/IncomeStatement">Income Statement</a></li>
+                            <li><a href="/Accounting/">Account View</a></li>
+                            @*<li><a href="#">View Account</a></li>*@
+                        </ul>
+                    </li>
+
+
+
+
+
+                    <li>
+                        <a href="#" id="btn-report" data-toggle="collapse" data-target="#submenu" aria-expanded="false">Reports<span class="caret"></span><span class="glyphicon glyphicon-th-list pull-right"></span></a>
+                        <ul class="nav collapse" id="submenu" role="menu" aria-labelledby="btn-report">
+                            @*<li><a href="/BasicAccount/BalanceSheet">Balance Sheet</a></li>
+                                <li><a href="/BasicAccount/IncomeStatement">Income Statement</a></li>
+                                <li><a href="/BasicAccount/TrialBalance">Trial Balance</a></li>
+                                <li><a href="/Accounting/">Account Summary</a></li>*@
+                            <li><a href="/SalesRep/Commisions">Sales Rep Summary</a></li>
+                            <li><a href="/Report/SalesByPeriod">Sales Summary by Period</a></li>
+                            <li><a href="/Report/PurchaseByPeriod">Purchase Summary by Period</a></li>
+                            <li><a href="/Statistics/SalesAreaSummary">Sales Summary by Areas</a></li>
+                            
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a href="#" id="btn-report" data-toggle="collapse" data-target="#profmenu" aria-expanded="false">Profiles Management<span class="caret"></span><span class="glyphicon glyphicon-folder-open pull-right"></span></a>
+                        <ul class="nav collapse" id="profmenu" role="menu" aria-labelledby="btn-report">
+                            <li><a href="@Url.Action("Index","ProductProfile")">Product Profiles</a></li>
+                            <li><a href="@Url.Action("Index","RawMaterialProfile")">Raw Materials</a></li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a href="#" id="btn-report" data-toggle="collapse" data-target="#custmenu" aria-expanded="false">Clients Management<span class="caret"></span><span class="glyphicon glyphicon-user pull-right"></span></a>
+                        <ul class="nav collapse" id="custmenu" role="menu" aria-labelledby="btn-report">
+                            <li><a href="@Url.Action("Index","Customer")">Customers</a></li>
+                            <li><a href="@Url.Action("Index","Supplier")">Suppliers</a></li>
+                            <li><a href="/SalesRep">Sales Rep</a></li>
+
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a href="#" id="btn-report" data-toggle="collapse" data-target="#accmenu" aria-expanded="false">Account Management<span class="caret"></span><span class="glyphicon glyphicon-folder-close pull-right"></span></a>
+                        <ul class="nav collapse" id="accmenu" role="menu" aria-labelledby="btn-report">
+                            
+                            <li><a href="/Loan/Create">Create Loan Account</a></li>
+                            <li><a href="@Url.Action("Create", "Accounting")">Create New Account</a></li>
+                            <li><a href="@Url.Action("EditCodes", "Accounting")">Change Account Codes</a></li>
+
+                            @*<li><a href="#">View Account</a></li>*@
+                        </ul>
+                    </li>
+                    @*
+                        <li><a href="#" id="btn-report" data-toggle="collapse" data-target="#subanalytics" aria-expanded="false">Analytics<span class="caret"></span><span class="glyphicon glyphicon-stats pull-right"></span></a>
+                            <ul class="nav collapse" id="subanalytics" role="menu" aria-labelledby="btn-report">
+                                <li><a href="/Statistics/IncomeSummary">Month Summary</a></li>
+                                <li><a href="/Statistics/SalesArea">Area</a></li>
+                            </ul>
+                        </li>*@
+
+                </ul>
+                <hr />
+                <!--  <ul class="nav nav-sidebar">
+                      <li><a href="">Nav item</a></li>
+                      <li><a href="">Nav item again</a></li>
+                      <li><a href="">Another nav item</a></li>
+                      <li><a href="">More navigation</a></li>
+                  </ul>
+                  <hr />
+                  <ul class="nav nav-sidebar">
+                      <li><a href="">Nav item again</a></li>
+                      <li><a href="">One more nav</a></li>
+
+                  </ul>
+                    -->
+            </div>
+            <div class="section-to-print col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+
+
+                <!--*******************************************************-->
+                <!--***************** Body Start  *************************-->
+                <!--*******************************************************-->
+                @RenderBody()
+                <!--*****************************************************-->
+                <!--******************* Body End  ***********************-->
+                <!--*****************************************************-->
+            </div>
+
+        </div>
+
+        <hr />
+        <footer>
+            <!--   <p class ="text-center">&copy; @DateTime.Now.Year</p>
+                -->
+        </footer>
+    </div>
+
+</body>
+</html>

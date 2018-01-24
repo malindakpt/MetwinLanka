@@ -1,0 +1,102 @@
+﻿@model IEnumerable<BusinessObjects.Reports.Sales_Period>
+@using GHM_ERP.Util
+
+
+@{
+    ViewBag.Title = "Sales By Period";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Sales In Time Period</h2>
+<br/>
+@using (Html.BeginForm("SalesByPeriod", "Report", FormMethod.Get))
+{
+    <div class="form-inline form-group">
+        Start Date : @Html.TextBox("fromdate", Html.FormatAsDate((DateTime)ViewBag.From), new { type = "date", @class = "form-control" })
+        End Date : @Html.TextBox("todate", Html.FormatAsDate((DateTime)ViewBag.To), new { type = "date", @class = "form-control" })
+        <input type="submit" value="Submit" class="btn btn-info" />
+    </div>
+
+}
+<table class="table table-hover">
+    <tr class="success">
+        <th>
+            Invoice No
+        </th>
+        <th>
+            Date
+        </th>
+
+        <th>
+            Customer Name
+        </th>
+        <th>
+            Sales Rep
+        </th>
+        <th>
+            Total Amount
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @*@Html.DisplayFor(modelItem => item.invoiceId)*@
+            @Html.ActionLink(item.DisplayInvoiceId, "SaleDetails", "ProductInvoice", new { id = item.invoiceId }, new { })
+        </td>
+        <td>
+            @Html.FormatAsDate(item.date)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.customerName)
+        </td>
+        <td>
+            @(item.saleRepName ?? "-")
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.amount)
+        </td>
+    </tr>
+}
+
+    @if(!Model.Any())
+    {
+        <tr>
+            <td colspan="5" class="text-center">No sales in this period</td>
+        </tr>
+    }
+
+</table>
+
+
+<div class="col-md-7">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Period Summary</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table-condensed ">
+                <tbody>
+                    <tr>
+                        <th>Sale Count</th>
+                        <td >@Model.Count()</td>
+                    </tr>
+                    <tr>
+                        <th class="col-md-8">Total Sales</th>
+                        <td class="col-md-4">
+                            @Model.Sum(i=> i.amount)
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+    </div>
+</div>
+
+@section  Scripts
+{
+    <!-- Graphics libs-->
+    <script src="~/Scripts/raphael-min.js"></script>
+    <script src="~/Scripts/Highcharts-4.0.1/js/highcharts.js"></script>
+}
